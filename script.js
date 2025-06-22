@@ -9,7 +9,7 @@ const products = [
         category: "ইলেকট্রনিক্স",
         rating: 4.5,
         stock: 10,
-        featured: true // এটা হোমপেজে দেখানোর জন্য
+        featured: true
     },
     {
         id: 2,
@@ -57,14 +57,16 @@ const products = [
     }
 ];
 
-// কার্ট ডেটা (মেমরিতে থাকবে)
-let cart = [];
+// কার্ট ডেটা (localStorage থেকে লোড বা খালি অ্যারে)
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+// অর্ডারের ডেটা (localStorage থেকে লোড বা খালি অ্যারে)
+let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
 // DOM এলিমেন্টগুলো ধরছি
 const cartCountElement = document.getElementById('cart-count');
 const cartButton = document.getElementById('cart-button');
 
-// স্টার রেটিং তৈরি করার ফাংশন (আগের মতই)
+// স্টার রেটিং তৈরি করার ফাংশন
 function getStarRating(rating) {
     let stars = '';
     for (let i = 1; i <= 5; i++) {
@@ -79,7 +81,7 @@ function getStarRating(rating) {
     return stars;
 }
 
-// প্রোডাক্ট কার্ড তৈরি করার ফাংশন (আগের মতই, শুধু প্যারামিটার যোগ করা হয়েছে)
+// প্রোডাক্ট কার্ড তৈরি করার ফাংশন
 function createProductCard(product) {
     const productCard = document.createElement('div');
     productCard.classList.add('product-card');
@@ -101,9 +103,8 @@ function createProductCard(product) {
         </div>
     `;
 
-    // বাটন ক্লিক হ্যান্ডলার যোগ করি (আগের মতই)
     const addToCartButton = productCard.querySelector('button');
-    if (addToCartButton) { // চেক করি বাটন আছে কিনা
+    if (addToCartButton) {
         addToCartButton.addEventListener('click', () => {
             addToCart(product.id);
         });
@@ -116,26 +117,28 @@ function createProductCard(product) {
 function displayFeaturedProducts() {
     const featuredProducts = products.filter(product => product.featured);
     const featuredProductContainer = document.getElementById('featured-product-container');
-    featuredProductContainer.innerHTML = ''; // খালি করি
-
-    featuredProducts.forEach(product => {
-        const productCard = createProductCard(product);
-        featuredProductContainer.appendChild(productCard);
-    });
+    if (featuredProductContainer) { // চেক করি এলিমেন্টটা আছে কিনা (শুধু index.html এ থাকবে)
+        featuredProductContainer.innerHTML = '';
+        featuredProducts.forEach(product => {
+            const productCard = createProductCard(product);
+            featuredProductContainer.appendChild(productCard);
+        });
+    }
 }
 
 // সব প্রোডাক্ট দেখানোর ফাংশন (products.html এর জন্য)
 function displayAllProducts() {
     const productContainer = document.getElementById('product-container');
-    productContainer.innerHTML = ''; // খালি করি
-
-    products.forEach(product => {
-        const productCard = createProductCard(product);
-        productContainer.appendChild(productCard);
-    });
+    if (productContainer) { // চেক করি এলিমেন্টটা আছে কিনা (শুধু products.html এ থাকবে)
+        productContainer.innerHTML = '';
+        products.forEach(product => {
+            const productCard = createProductCard(product);
+            productContainer.appendChild(productCard);
+        });
+    }
 }
 
-// কার্টে যোগ করার ফাংশন (আগের মতই)
+// কার্টে প্রোডাক্ট যোগ করার ফাংশন
 function addToCart(productId) {
     const productToAdd = products.find(p => p.id === productId);
 
@@ -150,6 +153,7 @@ function addToCart(productId) {
         
         productToAdd.stock--;
         updateCartCount();
+        saveCartToLocalStorage(); // কার্ট সেভ করি
         alert(`${productToAdd.name} কার্টে যোগ করা হয়েছে!`);
         // যে পেজে আছি, সেই পেজের প্রোডাক্ট রিফ্রেশ করি
         if (window.location.pathname.includes('index.html')) {
@@ -162,13 +166,54 @@ function addToCart(productId) {
     }
 }
 
-// কার্ট কাউন্টার আপডেট করার ফাংশন (আগের মতই)
+// কার্ট কাউন্টার আপডেট করার ফাংশন
 function updateCartCount() {
     const totalItemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
     cartCountElement.textContent = totalItemsInCart;
 }
 
-// কার্ট বাটন ক্লিক করলে কি হবে (আগের মতই)
+// কার্ট লোকাল স্টোরেজে সেভ করার ফাংশন
+function saveCartToLocalStorage() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// অর্ডার জেনারেট করার ফাংশন (কার্টকে অর্ডারে রূপান্তর)
+function generateOrder() {
+    if (cart.length === 0) {
+        alert('অর্ডার করার জন্য কার্টে কোনো প্রোডাক্ট নেই!');
+        return;
+    }
+
+    const orderId = 'ORD-' + Math.floor(Math.random() * 100000); // সিম্পল আইডি
+    const orderDate = new Date().toLocaleString('bn-BD');
+    const orderItems = cart.map(item => ({
+        productId: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        imageUrl: item.imageUrl
+    }));
+    const orderTotal = orderItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+    const newOrder = {
+        id: orderId,
+        date: orderDate,
+        items: orderItems,
+        total: orderTotal,
+        status: 'Pending' // নতুন অর্ডার Pending থাকবে
+    };
+
+    orders.push(newOrder);
+    localStorage.setItem('orders', JSON.stringify(orders)); // অর্ডার সেভ করি
+
+    cart = []; // কার্ট খালি করি
+    saveCartToLocalStorage(); // খালি কার্ট সেভ করি
+    updateCartCount(); // কার্ট কাউন্টার আপডেট করি
+
+    alert(`অর্ডার সফল হয়েছে! আপনার অর্ডার আইডি: ${orderId}\nআমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।`);
+}
+
+// কার্ট বাটন ক্লিক করলে কি হবে (আগের মতোই, কিন্তু অর্ডার জেনারেট অপশন যোগ করা হয়েছে)
 cartButton.addEventListener('click', () => {
     if (cart.length === 0) {
         alert('তোর কার্ট একদম খালি, মামা! কিছু কেনাকাটা কর!');
@@ -178,12 +223,16 @@ cartButton.addEventListener('click', () => {
             cartSummary += `- ${item.name} x ${item.quantity} (৳${(item.price * item.quantity).toLocaleString('bn-BD')})\n`;
         });
         const totalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-        cartSummary += `\nমোট: ৳${totalPrice.toLocaleString('bn-BD')}`;
-        alert(cartSummary);
+        cartSummary += `\nমোট: ৳${totalPrice.toLocaleString('bn-BD')}\n\n`;
+        cartSummary += `এখন কি অর্ডার করতে চাস?`;
+
+        if (confirm(cartSummary)) {
+            generateOrder();
+        }
     }
 });
 
-// পেজ লোড হওয়ার সাথে সাথেই প্রোডাক্টগুলো ডিসপ্লে করি
+// ওয়েবসাইট লোড হওয়ার সাথে সাথেই প্রোডাক্টগুলো ডিসপ্লে করি
 document.addEventListener('DOMContentLoaded', () => {
     updateCartCount(); // কার্ট কাউন্টার আপডেট করি
 
