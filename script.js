@@ -1,4 +1,4 @@
-// প্রোডাক্ট ডেটা (আরও কিছু ডেটা যোগ করা হয়েছে)
+// প্রোডাক্ট ডেটা (আগের মতোই)
 const products = [
     {
         id: 1,
@@ -78,13 +78,15 @@ function getStarRating(rating) {
 // সকল প্রোডাক্ট ডিসপ্লে করার ফাংশন
 function displayProducts() {
     productContainer.innerHTML = ''; // কন্টেইনার খালি করি যাতে ডুপ্লিকেট না হয়
+
     products.forEach(product => {
         const productCard = document.createElement('div');
         productCard.classList.add('product-card');
 
         const inStock = product.stock > 0;
         const buttonText = inStock ? 'কার্টে যোগ করুন' : 'স্টক শেষ';
-        const buttonClass = inStock ? '' : 'disabled'; // CSS এ .disabled ক্লাস থাকবে
+        // এখানে `disabled` অ্যাট্রিবিউট যোগ করলাম যদি স্টক না থাকে
+        const buttonDisabled = !inStock ? 'disabled' : ''; 
 
         productCard.innerHTML = `
             <img src="${product.imageUrl}" alt="${product.name}">
@@ -95,39 +97,46 @@ function displayProducts() {
                 <div class="rating">${getStarRating(product.rating)} (${product.rating})</div>
                 <p class="price">৳${product.price.toLocaleString('bn-BD')}</p>
                 ${!inStock ? '<p class="out-of-stock">এই মুহূর্তে স্টক নেই</p>' : ''}
-                <button data-product-id="${product.id}" ${!inStock ? 'disabled' : ''} class="${buttonClass}">${buttonText}</button>
+                <button data-product-id="${product.id}" ${buttonDisabled}>${buttonText}</button>
             </div>
         `;
         productContainer.appendChild(productCard);
     });
 
     // "কার্টে যোগ করুন" বাটনে ইভেন্ট লিসেনার যোগ করি
+    // প্রতিটি কার্ড তৈরি হওয়ার পর সেই কার্ডের বাটনগুলো ধরতে হবে
     const addToCartButtons = document.querySelectorAll('.product-card button');
     addToCartButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
-            const productId = parseInt(event.target.dataset.productId);
-            addToCart(productId);
-        });
+        // শুধুমাত্র যে বাটনগুলো disabled নয়, সেগুলোতে ইভেন্ট লিসেনার যোগ করব
+        if (!button.disabled) {
+            button.addEventListener('click', (event) => {
+                const productId = parseInt(event.target.dataset.productId);
+                addToCart(productId);
+            });
+        }
     });
 }
 
 // কার্টে প্রোডাক্ট যোগ করার ফাংশন
 function addToCart(productId) {
     const productToAdd = products.find(p => p.id === productId);
+
+    // প্রোডাক্ট আছে কিনা এবং স্টক আছে কিনা, দুটোই চেক করছি
     if (productToAdd && productToAdd.stock > 0) {
-        // যদি প্রোডাক্টটি কার্টে না থাকে অথবা স্টক থাকে
         const existingItem = cart.find(item => item.id === productId);
+        
         if (existingItem) {
             existingItem.quantity++;
         } else {
             cart.push({ ...productToAdd, quantity: 1 });
         }
+        
         productToAdd.stock--; // স্টক কমিয়ে দিচ্ছি
         updateCartCount();
         alert(`${productToAdd.name} কার্টে যোগ করা হয়েছে!`);
-        displayProducts(); // স্টক আপডেট করার জন্য প্রোডাক্টগুলো রিফ্রেশ করি
+        displayProducts(); // স্টক আপডেট হওয়ার পর UI রিফ্রেশ করি
     } else {
-        alert('দুঃখিত, এই প্রোডাক্টের স্টক শেষ!');
+        alert('দুঃখিত, এই প্রোডাক্টের স্টক শেষ অথবা এটি আর উপলব্ধ নেই!');
     }
 }
 
