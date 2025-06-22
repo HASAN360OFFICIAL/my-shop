@@ -1,8 +1,8 @@
-// প্রোডাক্ট ডেটা (আগের মতোই)
+// প্রোডাক্ট ডেটা (আগের মতোই) - HSN হিসেবে তোর নিজস্ব কিছু প্রোডাক্ট যোগ করতে পারিস
 const products = [
     {
         id: 1,
-        name: "স্মার্টফোন X1 প্রো",
+        name: "HSN স্মার্টফোন X1 প্রো",
         description: "নতুন মডেলের স্মার্টফোন, দারুণ ক্যামেরা ও ব্যাটারি লাইফ।",
         price: 25000,
         imageUrl: "https://via.placeholder.com/280x220/007bff/FFFFFF?text=Smartphone+X1",
@@ -13,7 +13,7 @@ const products = [
     },
     {
         id: 2,
-        name: "ওয়্যারলেস হেডফোন প্রো",
+        name: "HSN ওয়্যারলেস হেডফোন প্রো",
         description: "উন্নত মানের সাউন্ড এবং আরামদায়ক ডিজাইন, নয়েজ ক্যান্সেলিং।",
         price: 3500,
         imageUrl: "https://via.placeholder.com/280x220/28a745/FFFFFF?text=Headphone+Pro",
@@ -24,7 +24,7 @@ const products = [
     },
     {
         id: 3,
-        name: "আলট্রা গেমিং ল্যাপটপ",
+        name: "HSN আলট্রা গেমিং ল্যাপটপ",
         description: "শক্তিশালী প্রসেসর ও গ্রাফিক্স কার্ড সহ আলট্রা গেমিং ল্যাপটপ।",
         price: 85000,
         imageUrl: "https://via.placeholder.com/280x220/ffc107/333333?text=Gaming+Laptop",
@@ -35,7 +35,7 @@ const products = [
     },
     {
         id: 4,
-        name: "স্মার্টওয়াচ ভিআর",
+        name: "HSN স্মার্টওয়াচ ভিআর",
         description: "হৃদস্পন্দন ও ঘুম ট্র্যাকিং সহ মাল্টি-ফাংশনাল স্মার্টওয়াচ।",
         price: 7000,
         imageUrl: "https://via.placeholder.com/280x220/6c757d/FFFFFF?text=Smartwatch",
@@ -46,7 +46,7 @@ const products = [
     },
     {
         id: 5,
-        name: "৪কে আলট্রা এইচডি টিভি",
+        name: "HSN ৪কে আলট্রা এইচডি টিভি",
         description: "বিশাল স্ক্রিন এবং ক্রিস্টাল ক্লিয়ার পিকচার কোয়ালিটি।",
         price: 60000,
         imageUrl: "https://via.placeholder.com/280x220/17a2b8/FFFFFF?text=4K+TV",
@@ -57,6 +57,9 @@ const products = [
     }
 ];
 
+// কাস্টমাইজযোগ্য ডেলিভারি চার্জ
+const DELIVERY_CHARGE_PER_ITEM = 120; // প্রতিটা প্রোডাক্টের জন্য 120 টাকা ডেলিভারি চার্জ
+
 // কার্ট ডেটা (localStorage থেকে লোড বা খালি অ্যারে)
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 // অর্ডারের ডেটা (localStorage থেকে লোড বা খালি অ্যারে)
@@ -65,6 +68,12 @@ let orders = JSON.parse(localStorage.getItem('orders')) || [];
 // DOM এলিমেন্টগুলো ধরছি
 const cartCountElement = document.getElementById('cart-count');
 const cartButton = document.getElementById('cart-button');
+
+// Checkout Modal elements
+const checkoutModal = document.createElement('div');
+checkoutModal.classList.add('modal');
+checkoutModal.id = 'checkout-modal';
+document.body.appendChild(checkoutModal);
 
 // স্টার রেটিং তৈরি করার ফাংশন
 function getStarRating(rating) {
@@ -117,7 +126,7 @@ function createProductCard(product) {
 function displayFeaturedProducts() {
     const featuredProducts = products.filter(product => product.featured);
     const featuredProductContainer = document.getElementById('featured-product-container');
-    if (featuredProductContainer) { // চেক করি এলিমেন্টটা আছে কিনা (শুধু index.html এ থাকবে)
+    if (featuredProductContainer) {
         featuredProductContainer.innerHTML = '';
         featuredProducts.forEach(product => {
             const productCard = createProductCard(product);
@@ -129,7 +138,7 @@ function displayFeaturedProducts() {
 // সব প্রোডাক্ট দেখানোর ফাংশন (products.html এর জন্য)
 function displayAllProducts() {
     const productContainer = document.getElementById('product-container');
-    if (productContainer) { // চেক করি এলিমেন্টটা আছে কিনা (শুধু products.html এ থাকবে)
+    if (productContainer) {
         productContainer.innerHTML = '';
         products.forEach(product => {
             const productCard = createProductCard(product);
@@ -153,7 +162,7 @@ function addToCart(productId) {
         
         productToAdd.stock--;
         updateCartCount();
-        saveCartToLocalStorage(); // কার্ট সেভ করি
+        saveCartToLocalStorage();
         alert(`${productToAdd.name} কার্টে যোগ করা হয়েছে!`);
         // যে পেজে আছি, সেই পেজের প্রোডাক্ট রিফ্রেশ করি
         if (window.location.pathname.includes('index.html')) {
@@ -178,13 +187,13 @@ function saveCartToLocalStorage() {
 }
 
 // অর্ডার জেনারেট করার ফাংশন (কার্টকে অর্ডারে রূপান্তর)
-function generateOrder() {
+function generateOrder(customerName, customerPhone, customerAddress) {
     if (cart.length === 0) {
         alert('অর্ডার করার জন্য কার্টে কোনো প্রোডাক্ট নেই!');
         return;
     }
 
-    const orderId = 'ORD-' + Math.floor(Math.random() * 100000); // সিম্পল আইডি
+    const orderId = 'ORD-' + Math.floor(Math.random() * 100000);
     const orderDate = new Date().toLocaleString('bn-BD');
     const orderItems = cart.map(item => ({
         productId: item.id,
@@ -193,50 +202,114 @@ function generateOrder() {
         quantity: item.quantity,
         imageUrl: item.imageUrl
     }));
-    const orderTotal = orderItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    let orderTotal = orderItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const totalDeliveryCharge = cart.length * DELIVERY_CHARGE_PER_ITEM; // প্রতিটি আইটেমের জন্য ডেলিভারি চার্জ
+    orderTotal += totalDeliveryCharge; // মোট ডেলিভারি চার্জ যোগ করি
 
     const newOrder = {
         id: orderId,
         date: orderDate,
         items: orderItems,
+        customerInfo: {
+            name: customerName,
+            phone: customerPhone,
+            address: customerAddress
+        },
+        subtotal: orderTotal - totalDeliveryCharge, // ডেলিভারি চার্জ ছাড়া দাম
+        totalDeliveryCharge: totalDeliveryCharge,
         total: orderTotal,
-        status: 'Pending' // নতুন অর্ডার Pending থাকবে
+        status: 'Pending'
     };
 
     orders.push(newOrder);
     localStorage.setItem('orders', JSON.stringify(orders)); // অর্ডার সেভ করি
 
-    cart = []; // কার্ট খালি করি
-    saveCartToLocalStorage(); // খালি কার্ট সেভ করি
-    updateCartCount(); // কার্ট কাউন্টার আপডেট করি
+    cart = [];
+    saveCartToLocalStorage();
+    updateCartCount();
 
-    alert(`অর্ডার সফল হয়েছে! আপনার অর্ডার আইডি: ${orderId}\nআমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।`);
+    alert(`অর্ডার সফল হয়েছে! আপনার অর্ডার আইডি: ${orderId}\nমোট বিল: ৳${orderTotal.toLocaleString('bn-BD')} (ডেলিভারি চার্জ ৳${totalDeliveryCharge.toLocaleString('bn-BD')} সহ)।\nআমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।`);
+    checkoutModal.style.display = 'none'; // Modal বন্ধ করি
 }
 
-// কার্ট বাটন ক্লিক করলে কি হবে (আগের মতোই, কিন্তু অর্ডার জেনারেট অপশন যোগ করা হয়েছে)
+// কার্ট বাটন ক্লিক করলে কি হবে (Checkout Modal দেখাবে)
 cartButton.addEventListener('click', () => {
     if (cart.length === 0) {
         alert('তোর কার্ট একদম খালি, মামা! কিছু কেনাকাটা কর!');
-    } else {
-        let cartSummary = "তোর কার্টে যা আছে:\n";
-        cart.forEach(item => {
-            cartSummary += `- ${item.name} x ${item.quantity} (৳${(item.price * item.quantity).toLocaleString('bn-BD')})\n`;
-        });
-        const totalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-        cartSummary += `\nমোট: ৳${totalPrice.toLocaleString('bn-BD')}\n\n`;
-        cartSummary += `এখন কি অর্ডার করতে চাস?`;
-
-        if (confirm(cartSummary)) {
-            generateOrder();
-        }
+        return;
     }
+
+    // কার্ট সামারি তৈরি করি
+    let cartSummaryHtml = `<h3>তোর কার্টে যা আছে:</h3>`;
+    let subtotal = 0;
+    cart.forEach(item => {
+        const itemPrice = item.price * item.quantity;
+        subtotal += itemPrice;
+        cartSummaryHtml += `
+            <p>${item.name} x ${item.quantity} (৳${itemPrice.toLocaleString('bn-BD')})</p>
+        `;
+    });
+
+    const totalDeliveryCharge = cart.length * DELIVERY_CHARGE_PER_ITEM;
+    const finalTotal = subtotal + totalDeliveryCharge;
+
+    cartSummaryHtml += `
+        <p style="border-top: 1px dashed #ccc; padding-top: 10px;">সাবটোটাল: ৳${subtotal.toLocaleString('bn-BD')}</p>
+        <p>ডেলিভারি চার্জ (${cart.length} টি আইটেমের জন্য): ৳${totalDeliveryCharge.toLocaleString('bn-BD')}</p>
+        <p style="font-weight: bold; font-size: 1.2rem;">মোট: ৳${finalTotal.toLocaleString('bn-BD')}</p>
+    `;
+
+    // Checkout Modal এর ভেতরের কন্টেন্ট
+    checkoutModal.innerHTML = `
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>অর্ডার কনফার্ম করুন</h2>
+            ${cartSummaryHtml}
+            <form id="customer-info-form" class="customer-info-form">
+                <div>
+                    <label for="customerName">তোর নাম:</label>
+                    <input type="text" id="customerName" name="customerName" required>
+                </div>
+                <div>
+                    <label for="customerPhone">ফোন নম্বর:</label>
+                    <input type="tel" id="customerPhone" name="customerPhone" pattern="[0-9]{11}" placeholder="১১ ডিজিটের নম্বর দিন" required>
+                </div>
+                <div>
+                    <label for="customerAddress">ঠিকানা:</label>
+                    <textarea id="customerAddress" name="customerAddress" required></textarea>
+                </div>
+                <button type="submit">অর্ডার নিশ্চিত করুন</button>
+            </form>
+        </div>
+    `;
+    checkoutModal.style.display = 'flex'; // Modal দেখাই
+
+    // Modal বন্ধ করার জন্য ইভেন্ট লিসেনার
+    checkoutModal.querySelector('.close-button').addEventListener('click', () => {
+        checkoutModal.style.display = 'none';
+    });
+
+    // Modal এর বাইরে ক্লিক করলে বন্ধ হবে
+    window.addEventListener('click', (event) => {
+        if (event.target === checkoutModal) {
+            checkoutModal.style.display = 'none';
+        }
+    });
+
+    // কাস্টমার ফর্ম সাবমিট হ্যান্ডলার
+    checkoutModal.querySelector('#customer-info-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('customerName').value;
+        const phone = document.getElementById('customerPhone').value;
+        const address = document.getElementById('customerAddress').value;
+        generateOrder(name, phone, address);
+    });
 });
 
 // ওয়েবসাইট লোড হওয়ার সাথে সাথেই প্রোডাক্টগুলো ডিসপ্লে করি
 document.addEventListener('DOMContentLoaded', () => {
-    updateCartCount(); // কার্ট কাউন্টার আপডেট করি
+    updateCartCount();
 
-    // কারেন্ট পেজ অনুযায়ী প্রোডাক্ট ডিসপ্লে করি
     if (window.location.pathname.includes('index.html')) {
         displayFeaturedProducts();
     } else if (window.location.pathname.includes('products.html')) {
