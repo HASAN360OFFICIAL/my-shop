@@ -45,7 +45,8 @@
         .admin-form input[type="text"],
         .admin-form input[type="number"],
         .admin-form textarea,
-        .admin-form select {
+        .admin-form select,
+        .admin-form input[type="password"] { /* password input এর জন্য যোগ করলাম */
             width: calc(100% - 20px); /* Padding বাদ দিয়ে ১০০% */
             padding: 10px;
             border: 1px solid var(--border-color);
@@ -77,13 +78,13 @@
             background-color: #0056b3;
         }
 
-        .product-list-admin {
+        .product-list-admin, .order-list-admin { /* নতুন .order-list-admin যোগ করলাম */
             margin-top: 40px;
             border-top: 1px solid var(--border-color);
             padding-top: 30px;
         }
 
-        .product-item-admin {
+        .product-item-admin, .order-item-admin { /* নতুন .order-item-admin যোগ করলাম */
             display: flex;
             align-items: center;
             gap: 20px;
@@ -93,49 +94,126 @@
             margin-bottom: 15px;
             background-color: var(--card-bg);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            flex-wrap: wrap; /* ছোট স্ক্রিনের জন্য */
         }
 
-        .product-item-admin img {
+        .product-item-admin img, .order-item-admin .order-product-img { /* order image এর জন্য যোগ করলাম */
             width: 80px;
             height: 80px;
             object-fit: cover;
             border-radius: 5px;
+            flex-shrink: 0; /* ছোট স্ক্রিনে ইমেজ ছোট হবে না */
         }
 
-        .product-info-admin {
+        .product-info-admin, .order-info-admin { /* order info এর জন্য যোগ করলাম */
             flex-grow: 1;
+            min-width: 200px; /* ছোট স্ক্রিনে যাতে ঠিক থাকে */
         }
 
-        .product-info-admin h3 {
+        .product-info-admin h3, .order-info-admin h3 {
             margin: 0 0 5px 0;
             color: var(--primary-color);
             font-size: 1.3rem;
         }
 
-        .product-info-admin p {
+        .product-info-admin p, .order-info-admin p {
             margin: 0 0 3px 0;
             font-size: 0.9rem;
             color: #555;
         }
 
-        .product-actions-admin button {
+        .product-actions-admin, .order-actions-admin { /* order actions এর জন্য যোগ করলাম */
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .product-actions-admin button, .order-actions-admin button {
             background-color: #ffc107; /* Warning color for edit */
             color: var(--dark-color);
             border: none;
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
-            margin-left: 10px;
             transition: background-color 0.3s ease;
         }
         
-        .product-actions-admin button.delete-btn {
+        .product-actions-admin button.delete-btn, .order-actions-admin button.delete-btn {
             background-color: #dc3545; /* Danger color for delete */
             color: white;
         }
+        .order-actions-admin button.complete-btn {
+            background-color: var(--secondary-color); /* Green for complete */
+            color: white;
+        }
 
-        .product-actions-admin button:hover {
+        .product-actions-admin button:hover, .order-actions-admin button:hover {
             opacity: 0.9;
+        }
+
+        /* Login Page Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 150px); /* হেডার-ফুটার বাদ দিয়ে */
+            background-color: var(--light-color);
+        }
+
+        .login-form {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-form h2 {
+            margin-bottom: 30px;
+            color: var(--dark-color);
+        }
+
+        .login-form .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+        }
+
+        .login-form button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Content visibility */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -157,7 +235,23 @@
         </div>
     </header>
 
-    <main class="container">
+    <div id="login-section" class="login-container">
+        <form id="admin-login-form" class="login-form">
+            <h2>অ্যাডমিন লগইন</h2>
+            <div class="input-group">
+                <label for="username">ইউজারনেম:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="password">পাসওয়ার্ড:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <p id="login-error" class="error-message hidden">ভুল ইউজারনেম বা পাসওয়ার্ড।</p>
+            <button type="submit">লগইন করুন</button>
+        </form>
+    </div>
+
+    <main class="container hidden" id="admin-dashboard">
         <section class="admin-section">
             <h2>প্রোডাক্ট ম্যানেজমেন্ট</h2>
             <form id="product-form" class="admin-form">
@@ -206,6 +300,12 @@
                     </div>
             </div>
         </section>
+
+        <section class="admin-section order-list-admin">
+            <h2>অর্ডার ম্যানেজমেন্ট</h2>
+            <div id="admin-order-container">
+                </div>
+        </section>
     </main>
 
     <footer class="main-footer">
@@ -214,5 +314,6 @@
         </div>
     </footer>
 
-    <script src="admin-script.js"></script> </body>
+    <script src="admin-script.js"></script>
+</body>
 </html>
