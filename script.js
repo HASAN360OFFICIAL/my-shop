@@ -8,7 +8,8 @@ const products = [
         imageUrl: "https://via.placeholder.com/280x220/007bff/FFFFFF?text=Smartphone+X1",
         category: "ইলেকট্রনিক্স",
         rating: 4.5,
-        stock: 10
+        stock: 10,
+        featured: true // এটা হোমপেজে দেখানোর জন্য
     },
     {
         id: 2,
@@ -18,7 +19,8 @@ const products = [
         imageUrl: "https://via.placeholder.com/280x220/28a745/FFFFFF?text=Headphone+Pro",
         category: "অডিও",
         rating: 4.2,
-        stock: 5
+        stock: 5,
+        featured: true
     },
     {
         id: 3,
@@ -28,7 +30,8 @@ const products = [
         imageUrl: "https://via.placeholder.com/280x220/ffc107/333333?text=Gaming+Laptop",
         category: "কম্পিউটার",
         rating: 4.8,
-        stock: 2
+        stock: 2,
+        featured: true
     },
     {
         id: 4,
@@ -38,7 +41,8 @@ const products = [
         imageUrl: "https://via.placeholder.com/280x220/6c757d/FFFFFF?text=Smartwatch",
         category: "ওয়্যারলেস গ্যাজেটস",
         rating: 4.0,
-        stock: 0 // স্টক শেষ
+        stock: 0,
+        featured: false
     },
     {
         id: 5,
@@ -48,7 +52,8 @@ const products = [
         imageUrl: "https://via.placeholder.com/280x220/17a2b8/FFFFFF?text=4K+TV",
         category: "ইলেকট্রনিক্স",
         rating: 4.7,
-        stock: 7
+        stock: 7,
+        featured: false
     }
 ];
 
@@ -56,72 +61,84 @@ const products = [
 let cart = [];
 
 // DOM এলিমেন্টগুলো ধরছি
-const productContainer = document.getElementById('product-container');
 const cartCountElement = document.getElementById('cart-count');
 const cartButton = document.getElementById('cart-button');
 
-// স্টার রেটিং তৈরি করার ফাংশন
+// স্টার রেটিং তৈরি করার ফাংশন (আগের মতই)
 function getStarRating(rating) {
     let stars = '';
     for (let i = 1; i <= 5; i++) {
         if (i <= rating) {
-            stars += '<i class="fas fa-star"></i>'; // ভরা স্টার
+            stars += '<i class="fas fa-star"></i>';
         } else if (i - 0.5 === rating) {
-            stars += '<i class="fas fa-star-half-alt"></i>'; // হাফ স্টার
+            stars += '<i class="fas fa-star-half-alt"></i>';
         } else {
-            stars += '<i class="far fa-star"></i>'; // খালি স্টার
+            stars += '<i class="far fa-star"></i>';
         }
     }
     return stars;
 }
 
-// সকল প্রোডাক্ট ডিসপ্লে করার ফাংশন
-function displayProducts() {
-    productContainer.innerHTML = ''; // কন্টেইনার খালি করি যাতে ডুপ্লিকেট না হয়
+// প্রোডাক্ট কার্ড তৈরি করার ফাংশন (আগের মতই, শুধু প্যারামিটার যোগ করা হয়েছে)
+function createProductCard(product) {
+    const productCard = document.createElement('div');
+    productCard.classList.add('product-card');
 
-    products.forEach(product => {
-        const productCard = document.createElement('div');
-        productCard.classList.add('product-card');
+    const inStock = product.stock > 0;
+    const buttonText = inStock ? 'কার্টে যোগ করুন' : 'স্টক শেষ';
+    const buttonDisabled = !inStock ? 'disabled' : '';
 
-        const inStock = product.stock > 0;
-        const buttonText = inStock ? 'কার্টে যোগ করুন' : 'স্টক শেষ';
-        // এখানে `disabled` অ্যাট্রিবিউট যোগ করলাম যদি স্টক না থাকে
-        const buttonDisabled = !inStock ? 'disabled' : ''; 
+    productCard.innerHTML = `
+        <img src="${product.imageUrl}" alt="${product.name}">
+        <div class="product-card-content">
+            <p class="category">${product.category}</p>
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <div class="rating">${getStarRating(product.rating)} (${product.rating})</div>
+            <p class="price">৳${product.price.toLocaleString('bn-BD')}</p>
+            ${!inStock ? '<p class="out-of-stock">এই মুহূর্তে স্টক নেই</p>' : ''}
+            <button data-product-id="${product.id}" ${buttonDisabled}>${buttonText}</button>
+        </div>
+    `;
 
-        productCard.innerHTML = `
-            <img src="${product.imageUrl}" alt="${product.name}">
-            <div class="product-card-content">
-                <p class="category">${product.category}</p>
-                <h3>${product.name}</h3>
-                <p>${product.description}</p>
-                <div class="rating">${getStarRating(product.rating)} (${product.rating})</div>
-                <p class="price">৳${product.price.toLocaleString('bn-BD')}</p>
-                ${!inStock ? '<p class="out-of-stock">এই মুহূর্তে স্টক নেই</p>' : ''}
-                <button data-product-id="${product.id}" ${buttonDisabled}>${buttonText}</button>
-            </div>
-        `;
-        productContainer.appendChild(productCard);
-    });
+    // বাটন ক্লিক হ্যান্ডলার যোগ করি (আগের মতই)
+    const addToCartButton = productCard.querySelector('button');
+    if (addToCartButton) { // চেক করি বাটন আছে কিনা
+        addToCartButton.addEventListener('click', () => {
+            addToCart(product.id);
+        });
+    }
 
-    // "কার্টে যোগ করুন" বাটনে ইভেন্ট লিসেনার যোগ করি
-    // প্রতিটি কার্ড তৈরি হওয়ার পর সেই কার্ডের বাটনগুলো ধরতে হবে
-    const addToCartButtons = document.querySelectorAll('.product-card button');
-    addToCartButtons.forEach(button => {
-        // শুধুমাত্র যে বাটনগুলো disabled নয়, সেগুলোতে ইভেন্ট লিসেনার যোগ করব
-        if (!button.disabled) {
-            button.addEventListener('click', (event) => {
-                const productId = parseInt(event.target.dataset.productId);
-                addToCart(productId);
-            });
-        }
+    return productCard;
+}
+
+// হোমপেজের জন্য সেরা প্রোডাক্টগুলো দেখানোর ফাংশন
+function displayFeaturedProducts() {
+    const featuredProducts = products.filter(product => product.featured);
+    const featuredProductContainer = document.getElementById('featured-product-container');
+    featuredProductContainer.innerHTML = ''; // খালি করি
+
+    featuredProducts.forEach(product => {
+        const productCard = createProductCard(product);
+        featuredProductContainer.appendChild(productCard);
     });
 }
 
-// কার্টে প্রোডাক্ট যোগ করার ফাংশন
+// সব প্রোডাক্ট দেখানোর ফাংশন (products.html এর জন্য)
+function displayAllProducts() {
+    const productContainer = document.getElementById('product-container');
+    productContainer.innerHTML = ''; // খালি করি
+
+    products.forEach(product => {
+        const productCard = createProductCard(product);
+        productContainer.appendChild(productCard);
+    });
+}
+
+// কার্টে যোগ করার ফাংশন (আগের মতই)
 function addToCart(productId) {
     const productToAdd = products.find(p => p.id === productId);
 
-    // প্রোডাক্ট আছে কিনা এবং স্টক আছে কিনা, দুটোই চেক করছি
     if (productToAdd && productToAdd.stock > 0) {
         const existingItem = cart.find(item => item.id === productId);
         
@@ -131,22 +148,27 @@ function addToCart(productId) {
             cart.push({ ...productToAdd, quantity: 1 });
         }
         
-        productToAdd.stock--; // স্টক কমিয়ে দিচ্ছি
+        productToAdd.stock--;
         updateCartCount();
         alert(`${productToAdd.name} কার্টে যোগ করা হয়েছে!`);
-        displayProducts(); // স্টক আপডেট হওয়ার পর UI রিফ্রেশ করি
+        // যে পেজে আছি, সেই পেজের প্রোডাক্ট রিফ্রেশ করি
+        if (window.location.pathname.includes('index.html')) {
+            displayFeaturedProducts();
+        } else if (window.location.pathname.includes('products.html')) {
+            displayAllProducts();
+        }
     } else {
-        alert('দুঃখিত, এই প্রোডাক্টের স্টক শেষ অথবা এটি আর উপলব্ধ নেই!');
+        alert('দুঃখিত, এই প্রোডাক্টের স্টক শেষ!');
     }
 }
 
-// কার্ট কাউন্টার আপডেট করার ফাংশন
+// কার্ট কাউন্টার আপডেট করার ফাংশন (আগের মতই)
 function updateCartCount() {
     const totalItemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
     cartCountElement.textContent = totalItemsInCart;
 }
 
-// কার্ট বাটন ক্লিক করলে কি হবে (এখনো শুধু অ্যালার্ট)
+// কার্ট বাটন ক্লিক করলে কি হবে (আগের মতই)
 cartButton.addEventListener('click', () => {
     if (cart.length === 0) {
         alert('তোর কার্ট একদম খালি, মামা! কিছু কেনাকাটা কর!');
@@ -161,8 +183,14 @@ cartButton.addEventListener('click', () => {
     }
 });
 
-// ওয়েবসাইট লোড হওয়ার সাথে সাথেই প্রোডাক্টগুলো ডিসপ্লে করি
+// পেজ লোড হওয়ার সাথে সাথেই প্রোডাক্টগুলো ডিসপ্লে করি
 document.addEventListener('DOMContentLoaded', () => {
-    displayProducts();
-    updateCartCount(); // পেজ লোড হওয়ার সময় কার্ট কাউন্টার ০ দেখাবে
+    updateCartCount(); // কার্ট কাউন্টার আপডেট করি
+
+    // কারেন্ট পেজ অনুযায়ী প্রোডাক্ট ডিসপ্লে করি
+    if (window.location.pathname.includes('index.html')) {
+        displayFeaturedProducts();
+    } else if (window.location.pathname.includes('products.html')) {
+        displayAllProducts();
+    }
 });
