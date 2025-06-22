@@ -316,3 +316,13 @@ document.addEventListener('DOMContentLoaded', () => {
         displayAllProducts();
     }
 });
+// মোবাইল মেনু টগল করার জন্য জাভাস্ক্রিপ্ট
+document.addEventListener('DOMContentLoaded', () => {
+    const menuIcon = document.createElement('i');
+    menuIcon.classList.add('fas', 'fa-bars', 'menu-icon');
+    document.querySelector('.main-nav').appendChild(menuIcon);
+
+    menuIcon.addEventListener('click', () => {
+        document.querySelector('.main-nav').classList.toggle('responsive');
+    });
+});
