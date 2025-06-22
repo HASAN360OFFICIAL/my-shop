@@ -69,6 +69,7 @@ let orders = JSON.parse(localStorage.getItem('orders')) || [];
 const cartCountElement = document.getElementById('cart-count');
 const cartButton = document.getElementById('cart-button');
 
+
 // Checkout Modal elements
 const checkoutModal = document.createElement('div');
 checkoutModal.classList.add('modal');
@@ -126,7 +127,7 @@ function createProductCard(product) {
 function displayFeaturedProducts() {
     const featuredProducts = products.filter(product => product.featured);
     const featuredProductContainer = document.getElementById('featured-product-container');
-    if (featuredProductContainer) {
+    if (featuredProductContainer) { // চেক করি এলিমেন্টটা আছে কিনা (শুধু index.html এ থাকবে)
         featuredProductContainer.innerHTML = '';
         featuredProducts.forEach(product => {
             const productCard = createProductCard(product);
@@ -138,7 +139,7 @@ function displayFeaturedProducts() {
 // সব প্রোডাক্ট দেখানোর ফাংশন (products.html এর জন্য)
 function displayAllProducts() {
     const productContainer = document.getElementById('product-container');
-    if (productContainer) {
+    if (productContainer) { // চেক করি এলিমেন্টটা আছে কিনা (শুধু products.html এ থাকবে)
         productContainer.innerHTML = '';
         products.forEach(product => {
             const productCard = createProductCard(product);
@@ -314,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (menuToggle && navLinks) { // নিশ্চিত করি এলিমেন্টগুলো আছে
         menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active'); // 'responsive' এর বদলে 'active' ক্লাস টগল করব
+            navLinks.classList.toggle('active'); // 'active' ক্লাস টগল করব
             // আইকন চেঞ্জ করি (বার্গার থেকে ক্রস বা উল্টো)
             const icon = menuToggle.querySelector('i');
             if (navLinks.classList.contains('active')) {
@@ -343,6 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartCount();
 
     // current page check and display products
+    // এটা নিশ্চিত করে যে GitHub Pages এর রুট পাথও index.html হিসেবে ধরা হয়
     if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '/my-shop/') {
         displayFeaturedProducts();
     } else if (window.location.pathname.includes('products.html')) {
