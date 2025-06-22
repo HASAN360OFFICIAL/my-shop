@@ -32,21 +32,21 @@ let orders = JSON.parse(localStorage.getItem('orders')) || [];
 // অ্যাডমিন ইউজার ডেটা (localStorage থেকে লোড বা ডিফল্ট)
 let adminUser = JSON.parse(localStorage.getItem('adminUser')) || {
     username: "admin",
-    password: "123" // এই পাসওয়ার্ডটা অবশ্যই তোর নিজের মতো করে নিস!
+    password: "123" // তোর পাসওয়ার্ড! এটা পরিবর্তন করিস!
 };
 
 // দোকানের তথ্য (localStorage থেকে লোড বা ডিফল্ট)
 let shopInfo = JSON.parse(localStorage.getItem('shopInfo')) || {
     description: "HSN একটি জোশ অনলাইন দোকান, যেখানে আপনি সেরা জিনিস কিনতে পারবেন। আমরা সবসময় চেষ্টা করি সেরা প্রোডাক্ট দিতে।",
     established: "২০২৫",
-    owner: "[তোর নাম]",
-    address: "[তোর দোকানের ঠিকানা]"
+    owner: "[তোর নাম]", // তোর নাম এখানে দে
+    address: "[তোর দোকানের ঠিকানা]" // তোর দোকানের ঠিকানা এখানে দে
 };
 
 // যোগাযোগের তথ্য (localStorage থেকে লোড বা ডিফল্ট)
 let contactInfo = JSON.parse(localStorage.getItem('contactInfo')) || {
-    facebookProfile: "#",
-    facebookPage: "#",
+    facebookProfile: "https://www.facebook.com/your-profile", // তোর ফেসবুক প্রোফাইল লিঙ্ক
+    facebookPage: "https://www.facebook.com/your-page",   // তোর ফেসবুক পেজ লিঙ্ক
     whatsAppNumber: "+8801XXXXXXXXX" // তোর হোয়াটসঅ্যাপ নম্বর এখানে দে
 };
 
@@ -59,14 +59,25 @@ const loginError = document.getElementById('login-error');
 
 // DOM এলিমেন্টগুলো ধরছি (দোকানের তথ্য এডিটের জন্য)
 const adminInfoForm = document.getElementById('admin-info-form');
+const adminShopDescription = document.getElementById('adminShopDescription');
+const adminShopEstablished = document.getElementById('adminShopEstablished');
+const adminShopOwner = document.getElementById('adminShopOwner');
+const adminShopAddress = document.getElementById('adminShopAddress');
 const infoSaveMessage = document.getElementById('info-save-message');
 
 // DOM এলিমেন্টগুলো ধরছি (যোগাযোগ এডিটের জন্য)
 const adminContactForm = document.getElementById('admin-contact-form');
+const adminFacebookProfile = document.getElementById('adminFacebookProfile');
+const adminFacebookPage = document.getElementById('adminFacebookPage');
+const adminWhatsAppNumber = document.getElementById('adminWhatsAppNumber');
 const contactSaveMessage = document.getElementById('contact-save-message');
 
 // DOM এলিমেন্টগুলো ধরছি (ইউজার সেটিংসের জন্য)
 const adminUserSettingsForm = document.getElementById('admin-user-settings-form');
+const adminCurrentUsername = document.getElementById('adminCurrentUsername');
+const adminNewUsername = document.getElementById('adminNewUsername');
+const adminOldPassword = document.getElementById('adminOldPassword');
+const adminNewPassword = document.getElementById('adminNewPassword');
 const userSaveMessage = document.getElementById('user-save-message');
 const userErrorMessage = document.getElementById('user-error-message');
 
@@ -103,54 +114,54 @@ function saveSettingsToLocalStorage() {
 // অ্যাডমিন ফর্মগুলো লোড করি
 function loadAdminSettings() {
     // দোকানের তথ্য
-    document.getElementById('adminShopDescription').value = shopInfo.description;
-    document.getElementById('adminShopEstablished').value = shopInfo.established;
-    document.getElementById('adminShopOwner').value = shopInfo.owner;
-    document.getElementById('adminShopAddress').value = shopInfo.address;
+    adminShopDescription.value = shopInfo.description;
+    adminShopEstablished.value = shopInfo.established;
+    adminShopOwner.value = shopInfo.owner;
+    adminShopAddress.value = shopInfo.address;
 
     // যোগাযোগের তথ্য
-    document.getElementById('adminFacebookProfile').value = contactInfo.facebookProfile;
-    document.getElementById('adminFacebookPage').value = contactInfo.facebookPage;
-    document.getElementById('adminWhatsAppNumber').value = contactInfo.whatsAppNumber;
+    adminFacebookProfile.value = contactInfo.facebookProfile;
+    adminFacebookPage.value = contactInfo.facebookPage;
+    adminWhatsAppNumber.value = contactInfo.whatsAppNumber;
 
     // ইউজার সেটিংস
-    document.getElementById('adminCurrentUsername').value = adminUser.username;
-    document.getElementById('adminNewUsername').value = adminUser.username; // প্রাথমিকভাবে বর্তমান ইউজারনেম দেখাবে
+    adminCurrentUsername.value = adminUser.username;
+    adminNewUsername.value = adminUser.username; // প্রাথমিকভাবে বর্তমান ইউজারনেম দেখাবে
+    adminOldPassword.value = ''; // পাসওয়ার্ড ফিল্ড সবসময় খালি থাকবে
+    adminNewPassword.value = ''; // পাসওয়ার্ড ফিল্ড সবসময় খালি থাকবে
 }
 
 // দোকানের তথ্য ফর্ম সাবমিট
 adminInfoForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    shopInfo.description = document.getElementById('adminShopDescription').value;
-    shopInfo.established = document.getElementById('adminShopEstablished').value;
-    shopInfo.owner = document.getElementById('adminShopOwner').value;
-    shopInfo.address = document.getElementById('adminShopAddress').value;
-    saveSettingsToLocalStorage();
+    shopInfo.description = adminShopDescription.value;
+    shopInfo.established = adminShopEstablished.value;
+    shopInfo.owner = adminShopOwner.value;
+    shopInfo.address = adminShopAddress.value;
+    saveSettingsToLocalStorage(); // ডেটা সেভ করি
     infoSaveMessage.classList.remove('hidden');
     setTimeout(() => infoSaveMessage.classList.add('hidden'), 3000); // ৩ সেকেন্ড পর হাইড হবে
     alert('দোকানের তথ্য সফলভাবে সেভ হয়েছে!');
-    // ফ্রন্টএন্ডের about.html ফাইল আপডেট করার জন্য এই ডেটাগুলো ব্যবহার করতে হবে
 });
 
 // যোগাযোগের তথ্য ফর্ম সাবমিট
 adminContactForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    contactInfo.facebookProfile = document.getElementById('adminFacebookProfile').value;
-    contactInfo.facebookPage = document.getElementById('adminFacebookPage').value;
-    contactInfo.whatsAppNumber = document.getElementById('adminWhatsAppNumber').value;
-    saveSettingsToLocalStorage();
+    contactInfo.facebookProfile = adminFacebookProfile.value;
+    contactInfo.facebookPage = adminFacebookPage.value;
+    contactInfo.whatsAppNumber = adminWhatsAppNumber.value;
+    saveSettingsToLocalStorage(); // ডেটা সেভ করি
     contactSaveMessage.classList.remove('hidden');
     setTimeout(() => contactSaveMessage.classList.add('hidden'), 3000); // ৩ সেকেন্ড পর হাইড হবে
     alert('যোগাযোগের তথ্য সফলভাবে সেভ হয়েছে!');
-    // ফ্রন্টএন্ডের contact.html ফাইল আপডেট করার জন্য এই ডেটাগুলো ব্যবহার করতে হবে
 });
 
 // ইউজার সেটিংস ফর্ম সাবমিট
 adminUserSettingsForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const newUsername = document.getElementById('adminNewUsername').value;
-    const oldPassword = document.getElementById('adminOldPassword').value;
-    const newPassword = document.getElementById('adminNewPassword').value;
+    const newUsername = adminNewUsername.value;
+    const oldPassword = adminOldPassword.value;
+    const newPassword = adminNewPassword.value;
 
     userErrorMessage.classList.add('hidden'); // আগের এরর মেসেজ হাইড করি
     userSaveMessage.classList.add('hidden'); // আগের সফল মেসেজ হাইড করি
@@ -169,10 +180,10 @@ adminUserSettingsForm.addEventListener('submit', (e) => {
 
     adminUser.username = newUsername;
     adminUser.password = newPassword;
-    saveSettingsToLocalStorage();
+    saveSettingsToLocalStorage(); // ডেটা সেভ করি
     
-    document.getElementById('adminOldPassword').value = ''; // পুরনো পাসওয়ার্ড ফিল্ড খালি করি
-    document.getElementById('adminNewPassword').value = ''; // নতুন পাসওয়ার্ড ফিল্ড খালি করি
+    adminOldPassword.value = ''; // পুরনো পাসওয়ার্ড ফিল্ড খালি করি
+    adminNewPassword.value = ''; // নতুন পাসওয়ার্ড ফিল্ড খালি করি
     loadAdminSettings(); // ফর্ম আপডেট করি
     userSaveMessage.classList.remove('hidden');
     setTimeout(() => userSaveMessage.classList.add('hidden'), 3000);
@@ -265,6 +276,6 @@ function deleteOrder(orderId) {
 
 // পেজ লোড হওয়ার সাথে সাথেই সবকিছু ইনিশিয়েট করি
 document.addEventListener('DOMContentLoaded', () => {
-    // এটি নিশ্চিত করবে যে `adminUser` এবং অন্যান্য ডেটা `localStorage` থেকে লোড হয়েছে
     // লগইন হওয়ার পর `loadAdminSettings()` কল হবে।
+    // এইখানে কোনো ইনিশিয়াল লোড লজিক নেই কারণ এটি লগইন পেজ দিয়ে শুরু হবে।
 });
