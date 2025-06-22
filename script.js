@@ -62,7 +62,7 @@ const DELIVERY_CHARGE_PER_ITEM = 120; // প্রতিটা প্রোড�
 
 // কার্ট ডেটা (localStorage থেকে লোড বা খালি অ্যারে)
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
-// অর্ডারের ডেটা (localStorage থেকে লোড বা খালি অ্যারে)
+// অর্ডারের ডেটা (localStorage থেকে লোad বা খালি অ্যারে)
 let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
 // DOM এলিমেন্টগুলো ধরছি
@@ -202,9 +202,9 @@ function generateOrder(customerName, customerPhone, customerAddress) {
         quantity: item.quantity,
         imageUrl: item.imageUrl
     }));
-    let orderTotal = orderItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-    const totalDeliveryCharge = cart.length * DELIVERY_CHARGE_PER_ITEM; // প্রতিটি আইটেমের জন্য ডেলিভারি চার্জ
-    orderTotal += totalDeliveryCharge; // মোট ডেলিভারি চার্জ যোগ করি
+    let subtotal = orderItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const totalDeliveryCharge = cart.length * DELIVERY_CHARGE_PER_ITEM; // প্রতিটি আইটেমের জন্য 120 টাকা ডেলিভারি চার্জ
+    let orderTotal = subtotal + totalDeliveryCharge; // মোট ডেলিভারি চার্জ যোগ করি
 
     const newOrder = {
         id: orderId,
@@ -215,18 +215,18 @@ function generateOrder(customerName, customerPhone, customerAddress) {
             phone: customerPhone,
             address: customerAddress
         },
-        subtotal: orderTotal - totalDeliveryCharge, // ডেলিভারি চার্জ ছাড়া দাম
+        subtotal: subtotal,
         totalDeliveryCharge: totalDeliveryCharge,
         total: orderTotal,
-        status: 'Pending'
+        status: 'Pending' // নতুন অর্ডার Pending থাকবে
     };
 
     orders.push(newOrder);
     localStorage.setItem('orders', JSON.stringify(orders)); // অর্ডার সেভ করি
 
-    cart = [];
-    saveCartToLocalStorage();
-    updateCartCount();
+    cart = []; // কার্ট খালি করি
+    saveCartToLocalStorage(); // খালি কার্ট সেভ করি
+    updateCartCount(); // কার্ট কাউন্টার আপডেট করি
 
     alert(`অর্ডার সফল হয়েছে! আপনার অর্ডার আইডি: ${orderId}\nমোট বিল: ৳${orderTotal.toLocaleString('bn-BD')} (ডেলিভারি চার্জ ৳${totalDeliveryCharge.toLocaleString('bn-BD')} সহ)।\nআমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।`);
     checkoutModal.style.display = 'none'; // Modal বন্ধ করি
@@ -267,7 +267,7 @@ cartButton.addEventListener('click', () => {
             ${cartSummaryHtml}
             <form id="customer-info-form" class="customer-info-form">
                 <div>
-                    <label for="customerName">নাম:</label>
+                    <label for="customerName">তোর নাম:</label>
                     <input type="text" id="customerName" name="customerName" required>
                 </div>
                 <div>
@@ -306,23 +306,46 @@ cartButton.addEventListener('click', () => {
     });
 });
 
-// ওয়েবসাইট লোড হওয়ার সাথে সাথেই প্রোডাক্টগুলো ডিসপ্লে করি
+
+// --- মোবাইল মেনু টগল করার জন্য জাভাস্ক্রিপ্ট ---
 document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links'); // ul এর জন্য
+
+    if (menuToggle && navLinks) { // নিশ্চিত করি এলিমেন্টগুলো আছে
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active'); // 'responsive' এর বদলে 'active' ক্লাস টগল করব
+            // আইকন চেঞ্জ করি (বার্গার থেকে ক্রস বা উল্টো)
+            const icon = menuToggle.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times'); // ক্রস আইকন
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars'); // বার্গার আইকন
+            }
+        });
+
+        // যখন মেনু খোলা থাকবে, মেনু আইটেমে ক্লিক করলে মেনু বন্ধ হবে
+        document.querySelectorAll('.nav-links li a').forEach(item => { // nav-links এর ভেতরের a ট্যাগ
+            item.addEventListener('click', () => {
+                if (navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    const icon = menuToggle.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+    }
+
+    // বাকি পেজ লোড হওয়ার সাথে সাথেই প্রোডাক্টগুলো ডিসপ্লে করি
     updateCartCount();
 
-    if (window.location.pathname.includes('index.html')) {
+    // current page check and display products
+    if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname === '/my-shop/') {
         displayFeaturedProducts();
     } else if (window.location.pathname.includes('products.html')) {
         displayAllProducts();
     }
-});
-// মোবাইল মেনু টগল করার জন্য জাভাস্ক্রিপ্ট
-document.addEventListener('DOMContentLoaded', () => {
-    const menuIcon = document.createElement('i');
-    menuIcon.classList.add('fas', 'fa-bars', 'menu-icon');
-    document.querySelector('.main-nav').appendChild(menuIcon);
-
-    menuIcon.addEventListener('click', () => {
-        document.querySelector('.main-nav').classList.toggle('responsive');
-    });
 });
