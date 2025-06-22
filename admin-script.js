@@ -17,6 +17,41 @@ const loginError = document.getElementById('login-error');
 // DOM এলিমেন্টগুলো ধরছি (অর্ডার ম্যানেজমেন্টের জন্য)
 const adminOrderContainer = document.getElementById('admin-order-container');
 
+// --- মোবাইল মেনু টগল করার জন্য জাভাস্ক্রিপ্ট (এখানেও যোগ করা) ---
+document.addEventListener('DOMContentLoaded', () => {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links'); // ul এর জন্য
+
+    if (menuToggle && navLinks) { // নিশ্চিত করি এলিমেন্টগুলো আছে
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active'); // 'active' ক্লাস টগল করব
+            // আইকন চেঞ্জ করি (বার্গার থেকে ক্রস বা উল্টো)
+            const icon = menuToggle.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times'); // ক্রস আইকন
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars'); // বার্গার আইকন
+            }
+        });
+
+        // যখন মেনু খোলা থাকবে, মেনু আইটেমে ক্লিক করলে মেনু বন্ধ হবে
+        document.querySelectorAll('.nav-links li a').forEach(item => { // nav-links এর ভেতরের a ট্যাগ
+            item.addEventListener('click', () => {
+                if (navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    const icon = menuToggle.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+    }
+
+    // লগইন হওয়ার পর `displayAdminOrders()` কল হবে।
+});
+
 
 // --- লগইন ফাংশনালিটি ---
 adminLoginForm.addEventListener('submit', (e) => {
@@ -116,8 +151,3 @@ function deleteOrder(orderId) {
         alert(`অর্ডার ${orderId} ডিলিট হয়েছে!`);
     }
 }
-
-// পেজ লোড হওয়ার সাথে সাথেই সবকিছু ইনিশিয়েট করি
-document.addEventListener('DOMContentLoaded', () => {
-    // লগইন হওয়ার পর `displayAdminOrders()` কল হবে।
-});
