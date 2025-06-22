@@ -62,13 +62,12 @@ const DELIVERY_CHARGE_PER_ITEM = 120; // প্রতিটা প্রোড�
 
 // কার্ট ডেটা (localStorage থেকে লোড বা খালি অ্যারে)
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
-// অর্ডারের ডেটা (localStorage থেকে লোad বা খালি অ্যারে)
+// অর্ডারের ডেটা (localStorage থেকে লোড বা খালি অ্যারে)
 let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
 // DOM এলিমেন্টগুলো ধরছি
 const cartCountElement = document.getElementById('cart-count');
-const cartButton = document.getElementById('cart-button');
-
+const cartButton = document.getElementById('cart-button'); // এখানে ঠিক আছে
 
 // Checkout Modal elements
 const checkoutModal = document.createElement('div');
