@@ -636,6 +636,7 @@ body {
         flex-direction: row; /* ছোট স্ক্রিনে হেডারের এলিমেন্টগুলো পাশাপাশি থাকবে */
         justify-content: space-between; /* নাম বামে, মেনু আইকন ডানে */
         align-items: center;
+        position: relative; /* মেনু এবং কার্ট আইকনের জন্য পজিশন কন্ট্রোল */
     }
 
     .store-name {
@@ -643,9 +644,11 @@ body {
     }
 
     .main-nav {
+        /* এই অংশের স্টাইল পরিবর্তন করলাম */
+        position: static; /* মেনুর নিজের পজিশন ঠিক করি */
         display: flex;
         align-items: center;
-        position: relative; /* মেনু টগলের জন্য */
+        height: 100%; /* হেডারের উচ্চতা বরাবর */
     }
 
     /* বার্গার মেনু বাটন */
@@ -653,14 +656,14 @@ body {
         display: block; /* মোবাইল ভিউতে দেখাবে */
         background: none;
         border: none;
-        color: #fff; /* সাদা কালার */
-        font-size: 2rem; /* আইকন বড় করি */
+        color: #fff;
+        font-size: 2rem;
         cursor: pointer;
-        padding: 5px;
+        padding: 5px 10px; /* প্যাডিং বাড়াই */
         z-index: 1001; /* মেনুর উপরে থাকবে */
-        /* এটা নিশ্চিত করার জন্য যে বার্গার আইকনটা ডানদিকে ঠিকমতো থাকবে */
-        position: absolute; /* মেনু আইকন পজিশনিং */
-        right: 0;
+        /* অবস্থান পরিবর্তন করলাম: main-nav এর সরাসরি শিশু হবে, absolute হবে না */
+        margin-left: auto; /* ডানে ঠেলে দিই */
+        order: 2; /* কার্ট আইকনের পরে আসবে */
     }
     .menu-toggle i {
         color: white; /* আইকনের রং সাদা */
@@ -675,7 +678,7 @@ body {
         position: absolute;
         top: 100%; /* হেডারের নিচে থেকে শুরু হবে */
         left: 0;
-        z-index: 1000; /* অন্যান্য উপাদানের উপরে থাকবে */
+        z-index: 999; /* মেনু আইকনের নিচে থাকবে, কন্টেন্টের উপরে */
         padding: 10px 0;
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         animation: slideDown 0.3s ease-out; /* মেনু খোলার অ্যানিমেশন */
@@ -709,12 +712,13 @@ body {
 
     /* কার্ট আইকন ছোট স্ক্রিনে আলাদা করি */
     .cart-icon-container {
-        /* এইটা সম্ভবত main-nav এর ভেতরের ul এ না রেখে, header.container এর ভেতর রাখলে ভালো */
-        /* কিন্তু এখনকার HTML অনুযায়ী nav-links এর অংশ */
-        order: 2; /* মেনু টগলের পর দেখানোর জন্য */
-        /* flex: 1; /* যদি space-between কাজ না করে */
+        /* এইটা main-nav এর ul এর বাইরে নিয়ে আসছি, main-header .container এর সরাসরি child হিসেবে */
+        /* এটা এখন `main-nav` এর অংশ নয়, বরং `main-header .container` এর অংশ */
+        order: 1; /* মেনু টগলের আগে দেখানোর জন্য */
         margin-left: auto; /* ডান দিকে ঠেলে দিই */
-        padding-right: 5px; /* একটু ডানে প্যাডিং */
+        margin-right: 15px; /* একটু ডানে প্যাডিং */
+        position: relative; /* z-index এর জন্য */
+        z-index: 1002; /* মেনু আইকনের উপরে থাকবে */
     }
     
     /* ডেস্কটপ ভিউতে বার্গার মেনু লুকানো থাকবে */
@@ -742,6 +746,7 @@ body {
             margin-left: 25px; /* আগের মার্জিন ফেরত দিই */
             order: initial; /* order reset করি */
             padding-right: 0;
+            z-index: initial; /* z-index reset করি */
         }
     }
 
