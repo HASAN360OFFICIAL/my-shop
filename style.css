@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap'); /* Poppins ফন্ট যোগ করলাম */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 :root {
     --primary-color: #007bff;
@@ -45,26 +45,31 @@ body {
     font-weight: 700;
 }
 
-.main-nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.main-nav {
     display: flex;
     align-items: center;
 }
 
-.main-nav ul li {
+.main-nav .nav-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex; /* ডেস্কটপে মেনুগুলো পাশাপাশি থাকবে */
+    align-items: center;
+}
+
+.main-nav .nav-links li {
     margin-left: 25px;
 }
 
-.main-nav ul li a {
+.main-nav .nav-links li a {
     color: #fff;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
 }
 
-.main-nav ul li a:hover {
+.main-nav .nav-links li a:hover {
     color: var(--primary-color);
 }
 
@@ -72,16 +77,17 @@ body {
     background-color: var(--secondary-color);
     padding: 8px 12px;
     border-radius: 5px;
+    margin-left: 25px; /* কার্ট আইকনের বামে মার্জিন */
 }
 
 .cart-icon-container a {
-    color: #fff !important; /* !important ব্যবহার করলাম যাতে ওভাররাইড হয় */
+    color: #fff !important;
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-/* Products Section */
+/* Products Section (Home & Products page) */
 .products-section {
     padding: 40px 0;
 }
@@ -107,10 +113,9 @@ body {
     border-radius: 2px;
 }
 
-
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* রেসপন্সিভ গ্রিড */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 30px;
     justify-content: center;
 }
@@ -120,7 +125,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 12px;
     box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-    overflow: hidden; /* ভেতরের ইমেজ যাতে বাইরে না যায় */
+    overflow: hidden;
     text-align: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
@@ -135,14 +140,14 @@ body {
 
 .product-card img {
     max-width: 100%;
-    height: 220px; /* ছবির উচ্চতা */
+    height: 220px;
     object-fit: cover;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 15px;
 }
 
 .product-card-content {
-    padding: 0 20px 20px; /* নিচের প্যাডিং যোগ করলাম */
+    padding: 0 20px 20px;
 }
 
 .product-card h3 {
@@ -173,7 +178,7 @@ body {
 }
 
 .product-card .rating {
-    color: #ffc107; /* স্টার কালার */
+    color: #ffc107;
     margin-bottom: 10px;
     font-size: 0.9rem;
 }
@@ -188,8 +193,8 @@ body {
     font-size: 1.1rem;
     font-weight: 600;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-top: 15px; /* উপরে একটু মার্জিন */
-    width: 100%; /* বাটন পুরো চওড়া হবে */
+    margin-top: 15px;
+    width: 100%;
 }
 
 .product-card button:hover {
@@ -198,11 +203,50 @@ body {
 }
 
 .out-of-stock {
-    color: #dc3545; /* লাল রং */
+    color: #dc3545;
     font-weight: bold;
     font-size: 0.9rem;
     margin-top: 5px;
 }
+
+/* About Us & Contact Us Sections */
+.about-section, .contact-section {
+    padding: 40px 0;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-top: 30px;
+}
+.about-section h2, .contact-section h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--dark-color);
+}
+.about-section p, .contact-section p, .contact-section ul {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto 20px auto;
+    padding: 0 20px;
+    text-align: justify;
+}
+.contact-section ul {
+    list-style: none;
+    padding: 0;
+    text-align: center;
+}
+.contact-section ul li {
+    margin-bottom: 10px;
+}
+.contact-section ul li a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+.contact-section ul li a:hover {
+    text-decoration: underline;
+}
+
 
 /* Footer Styles */
 .main-footer {
@@ -218,214 +262,7 @@ body {
     margin: 0;
     font-size: 0.9rem;
 }
-/* Admin Panel Specific Styles (style.css এর সাথে যোগ করবি) */
-        .admin-section {
-            padding: 40px 0;
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-top: 30px;
-        }
 
-        .admin-section h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: var(--dark-color);
-        }
-
-        .admin-form {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: var(--light-color);
-            border-radius: 8px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .admin-form div {
-            margin-bottom: 15px;
-        }
-
-        .admin-form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .admin-form input[type="text"],
-        .admin-form input[type="number"],
-        .admin-form textarea,
-        .admin-form select,
-        .admin-form input[type="password"] { /* password input এর জন্য যোগ করলাম */
-            width: calc(100% - 20px); /* Padding বাদ দিয়ে ১০০% */
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 1rem;
-            box-sizing: border-box; /* padding সহ সাইজ ক্যালকুলেট করে */
-        }
-        
-        .admin-form textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .admin-form button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
-            display: block;
-            width: 100%;
-            font-weight: 600;
-        }
-
-        .admin-form button:hover {
-            background-color: #0056b3;
-        }
-
-        .product-list-admin, .order-list-admin { /* নতুন .order-list-admin যোগ করলাম */
-            margin-top: 40px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 30px;
-        }
-
-        .product-item-admin, .order-item-admin { /* নতুন .order-item-admin যোগ করলাম */
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: var(--card-bg);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            flex-wrap: wrap; /* ছোট স্ক্রিনের জন্য */
-        }
-
-        .product-item-admin img, .order-item-admin .order-product-img { /* order image এর জন্য যোগ করলাম */
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 5px;
-            flex-shrink: 0; /* ছোট স্ক্রিনে ইমেজ ছোট হবে না */
-        }
-
-        .product-info-admin, .order-info-admin { /* order info এর জন্য যোগ করলাম */
-            flex-grow: 1;
-            min-width: 200px; /* ছোট স্ক্রিনে যাতে ঠিক থাকে */
-        }
-
-        .product-info-admin h3, .order-info-admin h3 {
-            margin: 0 0 5px 0;
-            color: var(--primary-color);
-            font-size: 1.3rem;
-        }
-
-        .product-info-admin p, .order-info-admin p {
-            margin: 0 0 3px 0;
-            font-size: 0.9rem;
-            color: #555;
-        }
-
-        .product-actions-admin, .order-actions-admin { /* order actions এর জন্য যোগ করলাম */
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .product-actions-admin button, .order-actions-admin button {
-            background-color: #ffc107; /* Warning color for edit */
-            color: var(--dark-color);
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        
-        .product-actions-admin button.delete-btn, .order-actions-admin button.delete-btn {
-            background-color: #dc3545; /* Danger color for delete */
-            color: white;
-        }
-        .order-actions-admin button.complete-btn {
-            background-color: var(--secondary-color); /* Green for complete */
-            color: white;
-        }
-
-        .product-actions-admin button:hover, .order-actions-admin button:hover {
-            opacity: 0.9;
-        }
-
-        /* Login Page Styles */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: calc(100vh - 150px); /* হেডার-ফুটার বাদ দিয়ে */
-            background-color: var(--light-color);
-        }
-
-        .login-form {
-            background-color: var(--card-bg);
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .login-form h2 {
-            margin-bottom: 30px;
-            color: var(--dark-color);
-        }
-
-        .login-form .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .login-form label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .login-form input[type="text"],
-        .login-form input[type="password"] {
-            width: calc(100% - 20px);
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 1.1rem;
-            box-sizing: border-box;
-        }
-
-        .login-form button {
-            margin-top: 20px;
-            padding: 12px 25px;
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-
-        .error-message {
-            color: #dc3545;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        /* Content visibility */
-        .hidden {
-            display: none;
-        }
 /* Customer Info Form Styles (in script.js generated modal/checkout) */
 .customer-info-form {
     padding: 20px;
@@ -529,82 +366,46 @@ body {
     cursor: pointer;
 }
 
-/* Admin panel specific sections for edit */
-.admin-info-form, .admin-contact-form, .admin-user-settings {
-    max-width: 600px;
-    margin: 30px auto;
-    padding: 25px;
-    background-color: var(--light-color);
+/* Admin panel specific sections for edit (for admin.html) */
+.admin-section {
+    padding: 40px 0;
+    background-color: var(--card-bg);
     border-radius: 8px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin-top: 30px;
 }
-.admin-info-form div, .admin-contact-form div, .admin-user-settings div {
-    margin-bottom: 15px;
-}
-.admin-info-form label, .admin-contact-form label, .admin-user-settings label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: var(--text-color);
-}
-.admin-info-form input[type="text"], .admin-info-form textarea,
-.admin-contact-form input[type="text"], .admin-contact-form textarea,
-.admin-user-settings input[type="text"], .admin-user-settings input[type="password"] {
-    width: calc(100% - 20px);
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    font-size: 1rem;
-    box-sizing: border-box;
-}
-.admin-info-form textarea, .admin-contact-form textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-.admin-info-form button, .admin-contact-form button, .admin-user-settings button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-    width: 100%;
-    font-weight: 600;
-    margin-top: 10px;
-}
-.admin-info-form button:hover, .admin-contact-form button:hover, .admin-user-settings button:hover {
-    background-color: #0056b3;
-}
-.setting-success-message {
-    color: var(--secondary-color);
-    font-weight: 600;
-    margin-top: 10px;
+
+.admin-section h2 {
     text-align: center;
+    margin-bottom: 30px;
+    color: var(--dark-color);
 }
-/* Customer Info Form Styles (in script.js generated modal/checkout) */
-.customer-info-form {
+
+.admin-form { /* Product form in older admin.html */
+    max-width: 600px;
+    margin: 0 auto;
     padding: 20px;
     background-color: var(--light-color);
     border-radius: 8px;
-    margin-top: 20px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
 }
 
-.customer-info-form div {
+.admin-form div {
     margin-bottom: 15px;
 }
 
-.customer-info-form label {
+.admin-form label {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
     color: var(--text-color);
 }
 
-.customer-info-form input[type="text"],
-.customer-info-form input[type="tel"],
-.customer-info-form textarea {
+.admin-form input[type="text"],
+.admin-form input[type="number"],
+.admin-form textarea,
+.admin-form select,
+.admin-form input[type="password"] {
     width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid var(--border-color);
@@ -613,12 +414,12 @@ body {
     box-sizing: border-box;
 }
 
-.customer-info-form textarea {
+.admin-form textarea {
     resize: vertical;
-    min-height: 60px;
+    min-height: 80px;
 }
 
-.customer-info-form button {
+.admin-form button {
     background-color: var(--primary-color);
     color: white;
     border: none;
@@ -627,63 +428,151 @@ body {
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.3s ease;
+    display: block;
     width: 100%;
-    margin-top: 10px;
+    font-weight: 600;
 }
 
-.customer-info-form button:hover {
+.admin-form button:hover {
     background-color: #0056b3;
 }
 
-/* Modal Styles */
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1000; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.6); /* Black w/ opacity */
+.product-list-admin, .order-list-admin {
+    margin-top: 40px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 30px;
+}
+
+.product-item-admin, .order-item-admin {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    flex-wrap: wrap;
+}
+
+.product-item-admin img, .order-item-admin .order-product-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.product-info-admin, .order-info-admin {
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.product-info-admin h3, .order-info-admin h3 {
+    margin: 0 0 5px 0;
+    color: var(--primary-color);
+    font-size: 1.3rem;
+}
+
+.product-info-admin p, .order-info-admin p {
+    margin: 0 0 3px 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.product-actions-admin, .order-actions-admin {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.product-actions-admin button, .order-actions-admin button {
+    background-color: #ffc107;
+    color: var(--dark-color);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.product-actions-admin button.delete-btn, .order-actions-admin button.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+.order-actions-admin button.complete-btn {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.product-actions-admin button:hover, .order-actions-admin button:hover {
+    opacity: 0.9;
+}
+
+/* Login Page Styles (for admin.html) */
+.login-container {
+    display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 50px;
+    min-height: calc(100vh - 150px);
+    background-color: var(--light-color);
 }
 
-.modal-content {
-    background-color: #fefefe;
-    margin: auto;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    width: 80%;
-    max-width: 500px;
-    position: relative;
-    animation: fadeIn 0.3s ease-out;
+.login-form {
+    background-color: var(--card-bg);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+.login-form h2 {
+    margin-bottom: 30px;
+    color: var(--dark-color);
 }
 
-.close-button {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    cursor: pointer;
+.login-form .input-group {
+    margin-bottom: 20px;
+    text-align: left;
 }
 
-.close-button:hover,
-.close-button:focus {
-    color: #000;
-    text-decoration: none;
-    cursor: pointer;
+.login-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1.1rem;
+    box-sizing: border-box;
+}
+
+.login-form button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.error-message {
+    color: #dc3545;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Content visibility */
+.hidden {
+    display: none;
 }
 
 /* Admin panel specific sections for edit */
@@ -740,6 +629,7 @@ body {
     margin-top: 10px;
     text-align: center;
 }
+
 /* --- মোবাইল ডিভাইসের জন্য রেসপন্সিভ ডিজাইন --- */
 @media (max-width: 768px) {
     .main-header .container {
@@ -768,6 +658,9 @@ body {
         cursor: pointer;
         padding: 5px;
         z-index: 1001; /* মেনুর উপরে থাকবে */
+        /* এটা নিশ্চিত করার জন্য যে বার্গার আইকনটা ডানদিকে ঠিকমতো থাকবে */
+        position: absolute; /* মেনু আইকন পজিশনিং */
+        right: 0;
     }
     .menu-toggle i {
         color: white; /* আইকনের রং সাদা */
@@ -793,34 +686,35 @@ body {
     }
 
     .main-nav .nav-links li {
-        margin: 0;
+        margin: 0; /* মার্জিন বাদ দিই */
         width: 100%;
         text-align: center;
     }
 
     .main-nav .nav-links li a {
-        padding: 12px 20px;
+        padding: 12px 20px; /* ক্লিক করার জন্য বড় এলাকা */
         display: block;
-        color: #fff;
-        text-decoration: none;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-        transition: background-color 0.3s ease;
+        color: #fff; /* সাদা লেখা */
+        border-bottom: 1px solid rgba(255,255,255,0.1); /* হালকা বর্ডার */
     }
 
     .main-nav .nav-links li a:hover {
-        background-color: var(--primary-color);
+        background-color: var(--primary-color); /* হোভার কালার */
         color: #fff;
     }
 
     .main-nav .nav-links li:last-child a {
-        border-bottom: none;
+        border-bottom: none; /* শেষ আইটেমে বর্ডার থাকবে না */
     }
 
     /* কার্ট আইকন ছোট স্ক্রিনে আলাদা করি */
     .cart-icon-container {
-        margin-left: auto; /* কার্ট আইকনকে ডান দিকে ঠেলে দিই */
-        margin-right: 15px; /* একটু ডান থেকে মার্জিন */
-        order: 1; /* মেনু টগলের আগে দেখানোর জন্য */
+        /* এইটা সম্ভবত main-nav এর ভেতরের ul এ না রেখে, header.container এর ভেতর রাখলে ভালো */
+        /* কিন্তু এখনকার HTML অনুযায়ী nav-links এর অংশ */
+        order: 2; /* মেনু টগলের পর দেখানোর জন্য */
+        /* flex: 1; /* যদি space-between কাজ না করে */
+        margin-left: auto; /* ডান দিকে ঠেলে দিই */
+        padding-right: 5px; /* একটু ডানে প্যাডিং */
     }
     
     /* ডেস্কটপ ভিউতে বার্গার মেনু লুকানো থাকবে */
@@ -843,6 +737,11 @@ body {
             border-bottom: none;
             color: #fff;
             padding: 0;
+        }
+        .cart-icon-container { /* ডেস্কটপে কার্ট আইকনের স্টাইল ঠিক করি */
+            margin-left: 25px; /* আগের মার্জিন ফেরত দিই */
+            order: initial; /* order reset করি */
+            padding-right: 0;
         }
     }
 
