@@ -740,3 +740,80 @@ body {
     margin-top: 10px;
     text-align: center;
 }
+/* মোবাইল ডিভাইসের জন্য রেসপন্সিভ ডিজাইন */
+@media (max-width: 768px) {
+    .main-header .container {
+        flex-direction: column; /* হেডার কন্টেন্ট উল্লম্বভাবে সাজাও */
+        align-items: center; /* মাঝখানে নিয়ে আসো */
+    }
+
+    .main-nav ul {
+        flex-direction: column; /* মেনু আইটেমগুলো উল্লম্বভাবে সাজাও */
+        text-align: center; /* মেনু আইটেমগুলো মাঝখানে নিয়ে আসো */
+        margin-top: 10px; /* হেডার থেকে একটু নিচে নামাও */
+    }
+
+    .main-nav ul li {
+        margin: 5px 0; /* মেনু আইটেমের মধ্যে ফাঁকা জায়গা দাও */
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr; /* একটা কলামে প্রোডাক্টগুলো দেখাও */
+    }
+
+    .product-card {
+        margin: 10px; /* প্রোডাক্ট কার্ডের চারপাশে ফাঁকা জায়গা দাও */
+    }
+
+    .admin-info-form, .admin-contact-form, .admin-user-settings {
+        padding: 15px; /* ফর্মের ভেতরের প্যাডিং কমাও */
+    }
+
+    /* তিন লাইনের মেনু */
+    .main-nav {
+        position: relative;
+    }
+
+    .menu-icon {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: 2rem;
+        cursor: pointer;
+        color: var(--primary-color);
+    }
+
+    .main-nav ul {
+        display: none; /* প্রথমে মেনু লুকিয়ে রাখো */
+        flex-direction: column;
+        background-color: var(--light-color);
+        position: absolute;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        padding: 10px 0;
+    }
+
+    .main-nav ul li {
+        margin: 10px 0;
+    }
+
+    .main-nav ul li a {
+        display: block;
+        padding: 10px 20px;
+        text-decoration: none;
+        color: var(--text-color);
+        transition: background-color 0.3s ease;
+    }
+
+    .main-nav ul li a:hover {
+        background-color: #f0f0f0;
+    }
+
+    .main-nav.responsive ul {
+        display: flex; /* যখন রেসপন্সিভ ক্লাস যোগ হবে, তখন মেনু দেখাও */
+    }
+}
