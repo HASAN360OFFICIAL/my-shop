@@ -4,7 +4,7 @@ let products = JSON.parse(localStorage.getItem('adminProducts')) || [
     // ডিফল্ট প্রোডাক্ট যদি localStorage এ কিছু না থাকে
     {
         id: 1,
-        name: "স্মার্টফোন X1 প্রো",
+        name: "HSN স্মার্টফোন X1 প্রো",
         description: "নতুন মডেলের স্মার্টফোন, দারুণ ক্যামেরা ও ব্যাটারি লাইফ।",
         price: 25000,
         imageUrl: "https://via.placeholder.com/80x80/007bff/FFFFFF?text=P1",
@@ -15,7 +15,7 @@ let products = JSON.parse(localStorage.getItem('adminProducts')) || [
     },
     {
         id: 2,
-        name: "ওয়্যারলেস হেডফোন প্রো",
+        name: "HSN ওয়্যারলেস হেডফোন প্রো",
         description: "উন্নত মানের সাউন্ড এবং আরামদায়ক ডিজাইন, নয়েজ ক্যান্সেলিং।",
         price: 3500,
         imageUrl: "https://via.placeholder.com/80x80/28a745/FFFFFF?text=P2",
@@ -29,173 +29,156 @@ let products = JSON.parse(localStorage.getItem('adminProducts')) || [
 // অ্যাডমিন প্যানেলের জন্য অর্ডার ডেটা (localStorage থেকে লোড হবে)
 let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
+// অ্যাডমিন ইউজার ডেটা (localStorage থেকে লোড বা ডিফল্ট)
+let adminUser = JSON.parse(localStorage.getItem('adminUser')) || {
+    username: "admin",
+    password: "123" // এই পাসওয়ার্ডটা অবশ্যই তোর নিজের মতো করে নিস!
+};
+
+// দোকানের তথ্য (localStorage থেকে লোড বা ডিফল্ট)
+let shopInfo = JSON.parse(localStorage.getItem('shopInfo')) || {
+    description: "HSN একটি জোশ অনলাইন দোকান, যেখানে আপনি সেরা জিনিস কিনতে পারবেন। আমরা সবসময় চেষ্টা করি সেরা প্রোডাক্ট দিতে।",
+    established: "২০২৫",
+    owner: "[তোর নাম]",
+    address: "[তোর দোকানের ঠিকানা]"
+};
+
+// যোগাযোগের তথ্য (localStorage থেকে লোড বা ডিফল্ট)
+let contactInfo = JSON.parse(localStorage.getItem('contactInfo')) || {
+    facebookProfile: "#",
+    facebookPage: "#",
+    whatsAppNumber: "+8801XXXXXXXXX" // তোর হোয়াটসঅ্যাপ নম্বর এখানে দে
+};
+
+
 // DOM এলিমেন্টগুলো ধরছি (লগইনের জন্য)
 const loginSection = document.getElementById('login-section');
 const adminDashboard = document.getElementById('admin-dashboard');
 const adminLoginForm = document.getElementById('admin-login-form');
 const loginError = document.getElementById('login-error');
 
-// DOM এলিমেন্টগুলো ধরছি (প্রোডাক্ট ম্যানেজমেন্টের জন্য)
-const productForm = document.getElementById('product-form');
-const adminProductContainer = document.getElementById('admin-product-container');
-const submitButton = document.getElementById('submitButton');
-const clearFormButton = document.getElementById('clearFormButton');
+// DOM এলিমেন্টগুলো ধরছি (দোকানের তথ্য এডিটের জন্য)
+const adminInfoForm = document.getElementById('admin-info-form');
+const infoSaveMessage = document.getElementById('info-save-message');
+
+// DOM এলিমেন্টগুলো ধরছি (যোগাযোগ এডিটের জন্য)
+const adminContactForm = document.getElementById('admin-contact-form');
+const contactSaveMessage = document.getElementById('contact-save-message');
+
+// DOM এলিমেন্টগুলো ধরছি (ইউজার সেটিংসের জন্য)
+const adminUserSettingsForm = document.getElementById('admin-user-settings-form');
+const userSaveMessage = document.getElementById('user-save-message');
+const userErrorMessage = document.getElementById('user-error-message');
+
 
 // DOM এলিমেন্টগুলো ধরছি (অর্ডার ম্যানেজমেন্টের জন্য)
 const adminOrderContainer = document.getElementById('admin-order-container');
 
-let editingProductId = null; // কোন প্রোডাক্ট এডিট হচ্ছে তা ট্র্যাক করার জন্য
 
 // --- লগইন ফাংশনালিটি ---
-const ADMIN_USERNAME = "admin"; // তোর ইউজারনেম
-const ADMIN_PASSWORD = "123"; // তোর পাসওয়ার্ড (এটা ডামি, বাস্তব সার্ভারে এভাবে রাখবি না!)
-
 adminLoginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const username = e.target.username.value;
     const password = e.target.password.value;
 
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    if (username === adminUser.username && password === adminUser.password) {
         loginSection.classList.add('hidden');
         adminDashboard.classList.remove('hidden');
-        displayAdminProducts(); // লগইন করার পর প্রোডাক্ট দেখাবে
         displayAdminOrders(); // লগইন করার পর অর্ডার দেখাবে
+        loadAdminSettings(); // লগইন করার পর সেটিংস লোড করবে
     } else {
         loginError.classList.remove('hidden');
     }
 });
 
-// --- প্রোডাক্ট ম্যানেজমেন্ট ফাংশনালিটি ---
-function saveProductsToLocalStorage() {
-    localStorage.setItem('adminProducts', JSON.stringify(products));
+// --- সেটিংস ম্যানেজমেন্ট (দোকানের তথ্য, যোগাযোগ, ইউজার) ---
+
+// সেটিংস ডেটা লোকালস্টোরেজে সেভ করি
+function saveSettingsToLocalStorage() {
+    localStorage.setItem('shopInfo', JSON.stringify(shopInfo));
+    localStorage.setItem('contactInfo', JSON.stringify(contactInfo));
+    localStorage.setItem('adminUser', JSON.stringify(adminUser));
 }
 
-// প্রোডাক্ট লিস্ট ডিসপ্লে করার ফাংশন
-function displayAdminProducts() {
-    adminProductContainer.innerHTML = ''; // কন্টেইনার খালি করি
+// অ্যাডমিন ফর্মগুলো লোড করি
+function loadAdminSettings() {
+    // দোকানের তথ্য
+    document.getElementById('adminShopDescription').value = shopInfo.description;
+    document.getElementById('adminShopEstablished').value = shopInfo.established;
+    document.getElementById('adminShopOwner').value = shopInfo.owner;
+    document.getElementById('adminShopAddress').value = shopInfo.address;
 
-    products.forEach(product => {
-        const productItem = document.createElement('div');
-        productItem.classList.add('product-item-admin');
-        productItem.innerHTML = `
-            <img src="${product.imageUrl}" alt="${product.name}">
-            <div class="product-info-admin">
-                <h3>${product.name}</h3>
-                <p>আইডি: ${product.id}</p>
-                <p>দাম: ৳${product.price.toLocaleString('bn-BD')}</p>
-                <p>স্টক: ${product.stock}</p>
-                <p>ক্যাটাগরি: ${product.category}</p>
-                <p>ফিচার্ড: ${product.featured ? 'হ্যাঁ' : 'না'}</p>
-            </div>
-            <div class="product-actions-admin">
-                <button class="edit-btn" data-id="${product.id}">এডিট</button>
-                <button class="delete-btn" data-id="${product.id}">ডিলিট</button>
-            </div>
-        `;
-        adminProductContainer.appendChild(productItem);
-    });
+    // যোগাযোগের তথ্য
+    document.getElementById('adminFacebookProfile').value = contactInfo.facebookProfile;
+    document.getElementById('adminFacebookPage').value = contactInfo.facebookPage;
+    document.getElementById('adminWhatsAppNumber').value = contactInfo.whatsAppNumber;
 
-    // এডিট ও ডিলিট বাটনে ইভেন্ট লিসেনার যোগ করি
-    document.querySelectorAll('.edit-btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const id = parseInt(e.target.dataset.id);
-            editProduct(id);
-        });
-    });
-
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const id = parseInt(e.target.dataset.id);
-            deleteProduct(id);
-        });
-    });
+    // ইউজার সেটিংস
+    document.getElementById('adminCurrentUsername').value = adminUser.username;
+    document.getElementById('adminNewUsername').value = adminUser.username; // প্রাথমিকভাবে বর্তমান ইউজারনেম দেখাবে
 }
 
-// ফর্ম সাবমিট হ্যান্ডলার (নতুন প্রোডাক্ট যোগ বা এডিট)
-productForm.addEventListener('submit', (e) => {
+// দোকানের তথ্য ফর্ম সাবমিট
+adminInfoForm.addEventListener('submit', (e) => {
     e.preventDefault();
-
-    const formData = new FormData(productForm);
-    const productData = {
-        id: editingProductId ? parseInt(formData.get('id')) : generateProductId(),
-        name: formData.get('name'),
-        description: formData.get('description'),
-        price: parseFloat(formData.get('price')),
-        imageUrl: formData.get('imageUrl'),
-        category: formData.get('category'),
-        rating: parseFloat(formData.get('rating')),
-        stock: parseInt(formData.get('stock')),
-        featured: formData.get('featured') === 'on'
-    };
-
-    if (editingProductId) {
-        const index = products.findIndex(p => p.id === editingProductId);
-        if (index !== -1) {
-            products[index] = productData;
-            alert('প্রোডাক্ট সফলভাবে আপডেট হয়েছে!');
-        }
-        editingProductId = null;
-        submitButton.textContent = 'প্রোডাক্ট যোগ করুন';
-    } else {
-        products.push(productData);
-        alert('নতুন প্রোডাক্ট যোগ হয়েছে!');
-    }
-
-    saveProductsToLocalStorage(); // প্রোডাক্ট সেভ করি
-    productForm.reset();
-    document.getElementById('productId').value = '';
-    displayAdminProducts();
+    shopInfo.description = document.getElementById('adminShopDescription').value;
+    shopInfo.established = document.getElementById('adminShopEstablished').value;
+    shopInfo.owner = document.getElementById('adminShopOwner').value;
+    shopInfo.address = document.getElementById('adminShopAddress').value;
+    saveSettingsToLocalStorage();
+    infoSaveMessage.classList.remove('hidden');
+    setTimeout(() => infoSaveMessage.classList.add('hidden'), 3000); // ৩ সেকেন্ড পর হাইড হবে
+    alert('দোকানের তথ্য সফলভাবে সেভ হয়েছে!');
+    // ফ্রন্টএন্ডের about.html ফাইল আপডেট করার জন্য এই ডেটাগুলো ব্যবহার করতে হবে
 });
 
-// প্রোডাক্ট এডিট করার জন্য ফর্ম পূরণ করি
-function editProduct(id) {
-    const productToEdit = products.find(p => p.id === id);
-    if (productToEdit) {
-        document.getElementById('productId').value = productToEdit.id;
-        document.getElementById('productName').value = productToEdit.name;
-        document.getElementById('productDescription').value = productToEdit.description;
-        document.getElementById('productPrice').value = productToEdit.price;
-        document.getElementById('productImageUrl').value = productToEdit.imageUrl;
-        document.getElementById('productCategory').value = productToEdit.category;
-        document.getElementById('productRating').value = productToEdit.rating;
-        document.getElementById('productStock').value = productToEdit.stock;
-        document.getElementById('productFeatured').checked = productToEdit.featured;
-        
-        editingProductId = id;
-        submitButton.textContent = 'প্রোডাক্ট আপডেট করুন';
-    }
-}
-
-// প্রোডাক্ট ডিলিট করার ফাংশন
-function deleteProduct(id) {
-    if (confirm('আপনি কি নিশ্চিত যে এই প্রোডাক্টটি ডিলিট করতে চান?')) {
-        products = products.filter(product => product.id !== id);
-        alert('প্রোডাক্ট ডিলিট হয়েছে!');
-        saveProductsToLocalStorage(); // প্রোডাক্ট সেভ করি
-        displayAdminProducts();
-        if (editingProductId === id) {
-            editingProductId = null;
-            productForm.reset();
-            document.getElementById('productId').value = '';
-            submitButton.textContent = 'প্রোডাক্ট যোগ করুন';
-        }
-    }
-}
-
-// নতুন প্রোডাক্ট আইডি জেনারেট করার ফাংশন
-function generateProductId() {
-    if (products.length === 0) return 1;
-    const maxId = Math.max(...products.map(p => p.id));
-    return maxId + 1;
-}
-
-// ফর্ম পরিষ্কার করার বাটন
-clearFormButton.addEventListener('click', () => {
-    productForm.reset();
-    document.getElementById('productId').value = '';
-    editingProductId = null;
-    submitButton.textContent = 'প্রোডাক্ট যোগ করুন';
+// যোগাযোগের তথ্য ফর্ম সাবমিট
+adminContactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    contactInfo.facebookProfile = document.getElementById('adminFacebookProfile').value;
+    contactInfo.facebookPage = document.getElementById('adminFacebookPage').value;
+    contactInfo.whatsAppNumber = document.getElementById('adminWhatsAppNumber').value;
+    saveSettingsToLocalStorage();
+    contactSaveMessage.classList.remove('hidden');
+    setTimeout(() => contactSaveMessage.classList.add('hidden'), 3000); // ৩ সেকেন্ড পর হাইড হবে
+    alert('যোগাযোগের তথ্য সফলভাবে সেভ হয়েছে!');
+    // ফ্রন্টএন্ডের contact.html ফাইল আপডেট করার জন্য এই ডেটাগুলো ব্যবহার করতে হবে
 });
+
+// ইউজার সেটিংস ফর্ম সাবমিট
+adminUserSettingsForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const newUsername = document.getElementById('adminNewUsername').value;
+    const oldPassword = document.getElementById('adminOldPassword').value;
+    const newPassword = document.getElementById('adminNewPassword').value;
+
+    userErrorMessage.classList.add('hidden'); // আগের এরর মেসেজ হাইড করি
+    userSaveMessage.classList.add('hidden'); // আগের সফল মেসেজ হাইড করি
+
+    if (oldPassword !== adminUser.password) {
+        userErrorMessage.textContent = 'পুরাতন পাসওয়ার্ড ভুল!';
+        userErrorMessage.classList.remove('hidden');
+        return;
+    }
+
+    if (newUsername === adminUser.username && newPassword === adminUser.password) {
+        userErrorMessage.textContent = 'ইউজারনেম বা পাসওয়ার্ড পরিবর্তন করতে হবে, একই রাখা যাবে না!';
+        userErrorMessage.classList.remove('hidden');
+        return;
+    }
+
+    adminUser.username = newUsername;
+    adminUser.password = newPassword;
+    saveSettingsToLocalStorage();
+    
+    document.getElementById('adminOldPassword').value = ''; // পুরনো পাসওয়ার্ড ফিল্ড খালি করি
+    document.getElementById('adminNewPassword').value = ''; // নতুন পাসওয়ার্ড ফিল্ড খালি করি
+    loadAdminSettings(); // ফর্ম আপডেট করি
+    userSaveMessage.classList.remove('hidden');
+    setTimeout(() => userSaveMessage.classList.add('hidden'), 3000);
+    alert('ইউজারনেম ও পাসওয়ার্ড সফলভাবে আপডেট হয়েছে!');
+});
+
 
 // --- অর্ডার ম্যানেজমেন্ট ফাংশনালিটি ---
 function saveOrdersToLocalStorage() {
@@ -223,7 +206,11 @@ function displayAdminOrders() {
         orderItem.innerHTML = `
             <div class="order-info-admin">
                 <h3>অর্ডার আইডি: ${order.id}</h3>
+                <p>কাস্টমার: ${order.customerInfo.name} ( ${order.customerInfo.phone} )</p>
+                <p>ঠিকানা: ${order.customerInfo.address}</p>
                 <p>তারিখ: ${order.date}</p>
+                <p>সাবটোটাল: ৳${order.subtotal.toLocaleString('bn-BD')}</p>
+                <p>ডেলিভারি চার্জ: ৳${order.totalDeliveryCharge.toLocaleString('bn-BD')}</p>
                 <p>মোট মূল্য: ৳${order.total.toLocaleString('bn-BD')}</p>
                 <p>স্ট্যাটাস: <strong>${order.status}</strong></p>
                 <div style="margin-top: 10px; border-top: 1px dashed #eee; padding-top: 10px;">
@@ -278,7 +265,6 @@ function deleteOrder(orderId) {
 
 // পেজ লোড হওয়ার সাথে সাথেই সবকিছু ইনিশিয়েট করি
 document.addEventListener('DOMContentLoaded', () => {
-    // লগইন পেজ প্রাথমিকভাবে থাকবে, লগইন হলে ড্যাশবোর্ড দেখাবে
-    // এখানে কোনো কোড লেখা নেই, কারণ CSS এবং HTML এ hidden ক্লাস ব্যবহার করা হয়েছে।
-    // login-script.js এ login-form এর submit event এ login সফল হলে এই logic add করতে হবে
+    // এটি নিশ্চিত করবে যে `adminUser` এবং অন্যান্য ডেটা `localStorage` থেকে লোড হয়েছে
+    // লগইন হওয়ার পর `loadAdminSettings()` কল হবে।
 });
