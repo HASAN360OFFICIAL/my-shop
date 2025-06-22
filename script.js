@@ -267,7 +267,7 @@ cartButton.addEventListener('click', () => {
             ${cartSummaryHtml}
             <form id="customer-info-form" class="customer-info-form">
                 <div>
-                    <label for="customerName">তোর নাম:</label>
+                    <label for="customerName">নাম:</label>
                     <input type="text" id="customerName" name="customerName" required>
                 </div>
                 <div>
