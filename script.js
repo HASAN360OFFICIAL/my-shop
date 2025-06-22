@@ -1,220 +1,159 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap'); /* Poppins ফন্ট যোগ করলাম */
+// প্রোডাক্ট ডেটা (আরও কিছু ডেটা যোগ করা হয়েছে)
+const products = [
+    {
+        id: 1,
+        name: "স্মার্টফোন X1 প্রো",
+        description: "নতুন মডেলের স্মার্টফোন, দারুণ ক্যামেরা ও ব্যাটারি লাইফ।",
+        price: 25000,
+        imageUrl: "https://via.placeholder.com/280x220/007bff/FFFFFF?text=Smartphone+X1",
+        category: "ইলেকট্রনিক্স",
+        rating: 4.5,
+        stock: 10
+    },
+    {
+        id: 2,
+        name: "ওয়্যারলেস হেডফোন প্রো",
+        description: "উন্নত মানের সাউন্ড এবং আরামদায়ক ডিজাইন, নয়েজ ক্যান্সেলিং।",
+        price: 3500,
+        imageUrl: "https://via.placeholder.com/280x220/28a745/FFFFFF?text=Headphone+Pro",
+        category: "অডিও",
+        rating: 4.2,
+        stock: 5
+    },
+    {
+        id: 3,
+        name: "আলট্রা গেমিং ল্যাপটপ",
+        description: "শক্তিশালী প্রসেসর ও গ্রাফিক্স কার্ড সহ আলট্রা গেমিং ল্যাপটপ।",
+        price: 85000,
+        imageUrl: "https://via.placeholder.com/280x220/ffc107/333333?text=Gaming+Laptop",
+        category: "কম্পিউটার",
+        rating: 4.8,
+        stock: 2
+    },
+    {
+        id: 4,
+        name: "স্মার্টওয়াচ ভিআর",
+        description: "হৃদস্পন্দন ও ঘুম ট্র্যাকিং সহ মাল্টি-ফাংশনাল স্মার্টওয়াচ।",
+        price: 7000,
+        imageUrl: "https://via.placeholder.com/280x220/6c757d/FFFFFF?text=Smartwatch",
+        category: "ওয়্যারলেস গ্যাজেটস",
+        rating: 4.0,
+        stock: 0 // স্টক শেষ
+    },
+    {
+        id: 5,
+        name: "৪কে আলট্রা এইচডি টিভি",
+        description: "বিশাল স্ক্রিন এবং ক্রিস্টাল ক্লিয়ার পিকচার কোয়ালিটি।",
+        price: 60000,
+        imageUrl: "https://via.placeholder.com/280x220/17a2b8/FFFFFF?text=4K+TV",
+        category: "ইলেকট্রনিক্স",
+        rating: 4.7,
+        stock: 7
+    }
+];
 
-:root {
-    --primary-color: #007bff;
-    --secondary-color: #28a745;
-    --dark-color: #343a40;
-    --light-color: #f8f9fa;
-    --text-color: #333;
-    --card-bg: #ffffff;
-    --border-color: #e0e0e0;
+// কার্ট ডেটা (মেমরিতে থাকবে)
+let cart = [];
+
+// DOM এলিমেন্টগুলো ধরছি
+const productContainer = document.getElementById('product-container');
+const cartCountElement = document.getElementById('cart-count');
+const cartButton = document.getElementById('cart-button');
+
+// স্টার রেটিং তৈরি করার ফাংশন
+function getStarRating(rating) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            stars += '<i class="fas fa-star"></i>'; // ভরা স্টার
+        } else if (i - 0.5 === rating) {
+            stars += '<i class="fas fa-star-half-alt"></i>'; // হাফ স্টার
+        } else {
+            stars += '<i class="far fa-star"></i>'; // খালি স্টার
+        }
+    }
+    return stars;
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: var(--light-color);
-    color: var(--text-color);
-    line-height: 1.6;
+// সকল প্রোডাক্ট ডিসপ্লে করার ফাংশন
+function displayProducts() {
+    productContainer.innerHTML = ''; // কন্টেইনার খালি করি যাতে ডুপ্লিকেট না হয়
+    products.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.classList.add('product-card');
+
+        const inStock = product.stock > 0;
+        const buttonText = inStock ? 'কার্টে যোগ করুন' : 'স্টক শেষ';
+        const buttonClass = inStock ? '' : 'disabled'; // CSS এ .disabled ক্লাস থাকবে
+
+        productCard.innerHTML = `
+            <img src="${product.imageUrl}" alt="${product.name}">
+            <div class="product-card-content">
+                <p class="category">${product.category}</p>
+                <h3>${product.name}</h3>
+                <p>${product.description}</p>
+                <div class="rating">${getStarRating(product.rating)} (${product.rating})</div>
+                <p class="price">৳${product.price.toLocaleString('bn-BD')}</p>
+                ${!inStock ? '<p class="out-of-stock">এই মুহূর্তে স্টক নেই</p>' : ''}
+                <button data-product-id="${product.id}" ${!inStock ? 'disabled' : ''} class="${buttonClass}">${buttonText}</button>
+            </div>
+        `;
+        productContainer.appendChild(productCard);
+    });
+
+    // "কার্টে যোগ করুন" বাটনে ইভেন্ট লিসেনার যোগ করি
+    const addToCartButtons = document.querySelectorAll('.product-card button');
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            const productId = parseInt(event.target.dataset.productId);
+            addToCart(productId);
+        });
+    });
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+// কার্টে প্রোডাক্ট যোগ করার ফাংশন
+function addToCart(productId) {
+    const productToAdd = products.find(p => p.id === productId);
+    if (productToAdd && productToAdd.stock > 0) {
+        // যদি প্রোডাক্টটি কার্টে না থাকে অথবা স্টক থাকে
+        const existingItem = cart.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cart.push({ ...productToAdd, quantity: 1 });
+        }
+        productToAdd.stock--; // স্টক কমিয়ে দিচ্ছি
+        updateCartCount();
+        alert(`${productToAdd.name} কার্টে যোগ করা হয়েছে!`);
+        displayProducts(); // স্টক আপডেট করার জন্য প্রোডাক্টগুলো রিফ্রেশ করি
+    } else {
+        alert('দুঃখিত, এই প্রোডাক্টের স্টক শেষ!');
+    }
 }
 
-/* Header Styles */
-.main-header {
-    background-color: var(--dark-color);
-    color: #fff;
-    padding: 1.2rem 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+// কার্ট কাউন্টার আপডেট করার ফাংশন
+function updateCartCount() {
+    const totalItemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
+    cartCountElement.textContent = totalItemsInCart;
 }
 
-.main-header .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+// কার্ট বাটন ক্লিক করলে কি হবে (এখনো শুধু অ্যালার্ট)
+cartButton.addEventListener('click', () => {
+    if (cart.length === 0) {
+        alert('তোর কার্ট একদম খালি, মামা! কিছু কেনাকাটা কর!');
+    } else {
+        let cartSummary = "তোর কার্টে যা আছে:\n";
+        cart.forEach(item => {
+            cartSummary += `- ${item.name} x ${item.quantity} (৳${(item.price * item.quantity).toLocaleString('bn-BD')})\n`;
+        });
+        const totalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        cartSummary += `\nমোট: ৳${totalPrice.toLocaleString('bn-BD')}`;
+        alert(cartSummary);
+    }
+});
 
-.store-name {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 700;
-}
-
-.main-nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-.main-nav ul li {
-    margin-left: 25px;
-}
-
-.main-nav ul li a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.main-nav ul li a:hover {
-    color: var(--primary-color);
-}
-
-.cart-icon-container {
-    background-color: var(--secondary-color);
-    padding: 8px 12px;
-    border-radius: 5px;
-}
-
-.cart-icon-container a {
-    color: #fff !important; /* !important ব্যবহার করলাম যাতে ওভাররাইড হয় */
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-/* Products Section */
-.products-section {
-    padding: 40px 0;
-}
-
-.products-section h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 40px;
-    color: var(--dark-color);
-    position: relative;
-    padding-bottom: 10px;
-}
-
-.products-section h2::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 4px;
-    background-color: var(--primary-color);
-    border-radius: 2px;
-}
-
-
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* রেসপন্সিভ গ্রিড */
-    gap: 30px;
-    justify-content: center;
-}
-
-.product-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
-    overflow: hidden; /* ভেতরের ইমেজ যাতে বাইরে না যায় */
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-}
-
-.product-card img {
-    max-width: 100%;
-    height: 220px; /* ছবির উচ্চতা */
-    object-fit: cover;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 15px;
-}
-
-.product-card-content {
-    padding: 0 20px 20px; /* নিচের প্যাডিং যোগ করলাম */
-}
-
-.product-card h3 {
-    font-size: 1.5rem;
-    color: var(--primary-color);
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-weight: 600;
-}
-
-.product-card p {
-    font-size: 0.95rem;
-    color: var(--text-color);
-    margin-bottom: 10px;
-}
-
-.product-card .price {
-    font-size: 1.8rem;
-    color: var(--secondary-color);
-    font-weight: 700;
-    margin-bottom: 15px;
-}
-
-.product-card .category {
-    font-size: 0.85rem;
-    color: #6c757d;
-    margin-bottom: 5px;
-}
-
-.product-card .rating {
-    color: #ffc107; /* স্টার কালার */
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-}
-
-.product-card button {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-top: 15px; /* উপরে একটু মার্জিন */
-    width: 100%; /* বাটন পুরো চওড়া হবে */
-}
-
-.product-card button:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-.out-of-stock {
-    color: #dc3545; /* লাল রং */
-    font-weight: bold;
-    font-size: 0.9rem;
-    margin-top: 5px;
-}
-
-/* Footer Styles */
-.main-footer {
-    background-color: var(--dark-color);
-    color: #fff;
-    text-align: center;
-    padding: 1.5rem 0;
-    margin-top: 40px;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-}
-
-.main-footer p {
-    margin: 0;
-    font-size: 0.9rem;
-}
+// ওয়েবসাইট লোড হওয়ার সাথে সাথেই প্রোডাক্টগুলো ডিসপ্লে করি
+document.addEventListener('DOMContentLoaded', () => {
+    displayProducts();
+    updateCartCount(); // পেজ লোড হওয়ার সময় কার্ট কাউন্টার ০ দেখাবে
+});
